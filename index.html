@@ -25,6 +25,7 @@
 </script>
 <script>
 document.documentElement.classList.add('js');
+try { if (!sessionStorage.getItem('sg-intro') && !matchMedia('(prefers-reduced-motion: reduce)').matches && localStorage.getItem('sg-motion') !== 'off') document.documentElement.classList.add('has-intro'); } catch (e) {}
 try {
   var saved = localStorage.getItem('sg-theme');
   if (saved === 'light' || saved === 'dark') document.documentElement.setAttribute('data-theme', saved);
@@ -492,7 +493,7 @@ main:focus { outline: none; }
 .contact { position: relative; padding: var(--sec) 0 48px; overflow: hidden; scroll-margin-top: calc(-1 * var(--sec) + 8px); }
 .panel {
   position: relative; z-index: 1; display: grid; grid-template-columns: 1fr 1fr; gap: 24px clamp(24px, 4vw, 48px); align-items: center; padding: clamp(28px, 4vw, 48px); overflow: hidden; border-radius: 32px; border: 1px solid var(--line);
-  background: var(--grain), var(--panel-tint), linear-gradient(color-mix(in srgb, var(--surface-solid) 90%, transparent), color-mix(in srgb, var(--surface-solid) 90%, transparent));
+  background: var(--grain), var(--panel-tint), linear-gradient(color-mix(in srgb, var(--surface-solid) 70%, transparent), color-mix(in srgb, var(--surface-solid) 70%, transparent));
 }
 .panel::before { content: ""; position: absolute; inset: 0; pointer-events: none; background: radial-gradient(500px circle at var(--sx, 85%) var(--sy, 12%), rgba(255, 182, 39, .26), transparent 62%); }
 .panel > * { position: relative; z-index: 1; }
@@ -659,16 +660,155 @@ main:focus { outline: none; }
   .progress, .cursor-glow, .cur, .cur-dot { display: none; }
   .ring .bar { transition: none; }
 }
+
+/* ===== Story sphere: one fixed layer behind the whole page ===== */
+#cosmos { position: fixed; inset: 0; width: 100%; height: 100%; z-index: -1; display: block; pointer-events: none; cursor: auto; }
+.cos-tip { position: fixed; }
+
+/* ===== Opening sequence ===== */
+.intro-ov { display: none; }
+.has-intro .intro-ov { position: fixed; inset: 0; z-index: 500; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; background: var(--bg); animation: introOut .5s ease 2.6s forwards; }
+.intro-done .intro-ov { display: none; }
+@keyframes introOut { to { opacity: 0; visibility: hidden; } }
+.has-intro .ch { animation-delay: calc(var(--i) * 60ms + 2.6s); }
+.intro-skip .ch { animation-delay: calc(var(--i) * 60ms + .05s); }
+.has-intro .hero-dash { animation-delay: 3.4s; }
+.intro-ov .mark { width: 64px; height: 64px; border-radius: 50%; display: grid; place-items: center; font: 700 22px var(--display); border: 2px solid var(--accent); box-shadow: 0 0 40px rgba(255, 182, 39, .5); }
+.intro-ov .num { font: 780 clamp(56px, 12vw, 120px)/1 var(--display); letter-spacing: -0.04em; font-variant-numeric: tabular-nums; }
+.intro-ov .lbl { color: var(--muted); font: 500 14px var(--mono); }
+.intro-ov .bar2 { width: min(320px, 70vw); height: 3px; background: var(--line); border-radius: 3px; overflow: hidden; }
+.intro-ov .bar2 i { display: block; height: 100%; transform-origin: left; transform: scaleX(0); background: linear-gradient(90deg, var(--accent), var(--mag), var(--violet)); }
+
+/* ===== Command palette ===== */
+.pal { position: fixed; inset: 0; z-index: 300; display: flex; justify-content: center; align-items: flex-start; padding: 14vh 16px 16px; background: rgba(2, 3, 10, .55); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); }
+.pal[hidden] { display: none; }
+.pal-box { width: min(620px, 100%); border-radius: 22px; overflow: hidden; }
+.pal-in { width: 100%; padding: 18px 20px; background: transparent; border: 0; border-bottom: 1px solid var(--line); color: var(--ink); font: 500 18px var(--body); outline: none; }
+.pal-in::placeholder { color: var(--muted); }
+.pal-list { list-style: none; margin: 0; padding: 8px; max-height: 50vh; overflow-y: auto; }
+.pal-g { padding: 10px 12px 4px; margin: 0; color: var(--muted); font: 500 12px var(--mono); text-transform: uppercase; letter-spacing: .06em; }
+.pal-i { display: flex; align-items: center; padding: 11px 12px; border-radius: 12px; cursor: pointer; margin: 0; }
+.pal-i[aria-selected="true"] { background: color-mix(in srgb, var(--violet) 28%, transparent); }
+.pal-foot { padding: 10px 16px; border-top: 1px solid var(--line); color: var(--muted); font-size: 13px; }
+.kbd { font: 500 12px var(--mono); padding: 2px 6px; border: 1px solid var(--line); border-radius: 6px; }
+#palBtn { flex: none; }
+
+/* ===== Hire me pill ===== */
+.hire { position: fixed; right: 24px; bottom: 24px; z-index: 35; display: none; flex-direction: column; align-items: flex-end; gap: 10px; opacity: 0; transform: translateY(12px); pointer-events: none; transition: opacity .3s ease, transform .3s ease; }
+@media (min-width: 901px) { .hire { display: flex; } }
+.hire.show { opacity: 1; transform: none; pointer-events: auto; }
+.hire-card { padding: 14px; width: 270px; border-radius: 20px; display: grid; gap: 8px; }
+.hire-card[hidden] { display: none; }
+.hire-card p { margin: 0 0 4px; font-size: 14.5px; color: var(--muted); }
+.hire-card .btn { justify-content: flex-start; }
+
+/* ===== 30-second version ===== */
+.hero-bar { flex-direction: row; flex-wrap: wrap; align-items: center; justify-content: space-between; }
+.quick-btn { align-self: flex-end; pointer-events: auto; }
+@media (max-width: 1199px) { .quick-btn { align-self: flex-start; } }
+.quick-exit { display: none; margin: 16px 0 0; }
+html[data-quick="on"] .quick-exit { display: block; }
+html[data-quick="on"] .sec:not(#results), html[data-quick="on"] .tools-cap, html[data-quick="on"] .tools { display: none; }
+
+/* ===== Skills tied to the sphere and the experience ===== */
+[data-skill="trading"] { --c: #FFB627; }
+[data-skill="analysis"] { --c: #22D3EE; }
+[data-skill="tech"] { --c: #7C6CFF; }
+[data-skill="content"] { --c: #FF4FD8; }
+.bcard[data-skill] .ico { color: var(--c); border-color: color-mix(in srgb, var(--c) 45%, var(--line)); }
+.skill-btn { margin-top: 12px; font: 600 14px var(--body); color: var(--ink); background: transparent; border: 1px solid color-mix(in srgb, var(--c) 55%, var(--line)); border-radius: 999px; padding: 9px 14px; min-height: 40px; cursor: pointer; transition: background-color .2s ease; }
+.skill-btn:hover, .skill-btn[aria-pressed="true"] { background: color-mix(in srgb, var(--c) 20%, transparent); }
+.job-cols > div { border-radius: 14px; padding: 12px; margin: -12px; transition: box-shadow .3s ease, background-color .3s ease; }
+.job-cols > div.hl { box-shadow: 0 0 0 1.5px var(--c), 0 0 28px -6px var(--c); background: color-mix(in srgb, var(--c) 9%, transparent); }
+.job-cols > div.hl h4 { color: var(--c); }
+
+/* ===== Run a trading day ===== */
+.sim { display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); gap: var(--gap) 32px; padding: var(--card); }
+.sim-ctl { display: grid; gap: 18px; align-content: start; }
+.ctl { border: 0; margin: 0; padding: 0; min-width: 0; }
+.ctl label:not(.pill), .ctl legend, .ctl-row { display: flex; justify-content: space-between; align-items: baseline; width: 100%; font-weight: 600; font-size: 15px; margin: 0 0 8px; padding: 0; }
+.ctl output { font: 600 14px var(--mono); color: var(--accent); }
+.ctl-l { font-weight: 600; font-size: 15px; }
+.ctl-row { margin-bottom: 8px; }
+input[type="range"] { -webkit-appearance: none; appearance: none; width: 100%; height: 6px; border-radius: 6px; background: linear-gradient(90deg, var(--violet), var(--accent)); margin: 8px 0; cursor: pointer; }
+input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 26px; height: 26px; border-radius: 50%; background: #fff; border: 4px solid var(--accent); box-shadow: 0 0 16px rgba(255, 182, 39, .7); cursor: pointer; }
+input[type="range"]::-moz-range-thumb { width: 22px; height: 22px; border-radius: 50%; background: #fff; border: 4px solid var(--accent); box-shadow: 0 0 16px rgba(255, 182, 39, .7); cursor: pointer; }
+input[type="range"]:focus-visible { outline: 3px solid var(--accent); outline-offset: 6px; }
+.pills { display: flex; flex-wrap: wrap; gap: 8px; }
+.pill { position: relative; display: block; margin: 0; }
+.pill input { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; margin: 0; }
+.pill span { display: block; padding: 10px 14px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); font-size: 14.5px; font-weight: 500; pointer-events: none; transition: background-color .2s ease, border-color .2s ease; }
+.pill input:checked + span { background: color-mix(in srgb, var(--accent) 18%, transparent); border-color: var(--accent); }
+.pill input:focus-visible + span { outline: 3px solid var(--accent); outline-offset: 3px; }
+.kpis { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.kpi { padding: 12px 14px; border-radius: 16px; background: var(--surface); border: 1px solid var(--line); }
+.kpi .k { display: block; font: 750 clamp(22px, 2.6vw, 30px)/1.1 var(--display); letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+.kpi .l { color: var(--muted); font-size: 13.5px; }
+.chart { margin-top: 12px; }
+.chart svg { width: 100%; height: 130px; display: block; }
+.chart-cap { margin: 4px 0 0; color: var(--muted); font-size: 13px; }
+.verdict { margin: 12px 0 0; font-size: 16px; min-height: 4.8em; }
+
+@media (max-width: 1080px) {
+  .sim { grid-template-columns: 1fr; }
+}
+@media (max-width: 600px) {
+  #palBtn { display: none; }
+  .kpis { gap: 8px; }
+  .kpi { padding: 10px; }
+}
+@media print {
+  .intro-ov, .pal, .hire, .quick-btn, .skill-btn, .sim { display: none !important; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .intro-ov { display: none !important; }
+  .has-intro .ch { animation-delay: 0s; }
+  .hire { transition: none; }
+}
+:root[data-motion="off"] .intro-ov { display: none !important; }
+
+/* ===== Nav fit and see-through cards ===== */
+.links a { padding: 8px 11px; }
+@media (max-width: 1240px) { #palBtn { display: none; } }
+.hero-bar .tags li { font-size: 13.5px; padding: 4px 10px; }
+.glass:not(.lg) { -webkit-backdrop-filter: blur(2px); backdrop-filter: blur(2px); }
+
+.menu-cta .btn { flex: 1 1 auto; min-width: max-content; }
 </style>
 </head>
 <body id="top">
 <a class="skip" href="#main">Skip to content</a>
+<div class="intro-ov" id="introOv" role="status" aria-label="Loading the catalogue">
+  <span class="mark" aria-hidden="true">SG</span>
+  <div class="num" id="introNum" aria-hidden="true">0</div>
+  <div class="lbl" aria-hidden="true">products loaded into the catalogue</div>
+  <div class="bar2" aria-hidden="true"><i id="introBar"></i></div>
+  <button class="btn btn-sm" type="button" id="introSkip">Skip intro</button>
+</div>
 <div class="aurora" aria-hidden="true"></div>
 <div class="grain" aria-hidden="true"></div>
+<canvas id="cosmos" aria-hidden="true"></canvas>
+<div class="cos-tip" id="cosTip" aria-hidden="true"></div>
 <div class="cursor-glow" id="glow" aria-hidden="true"></div>
 <div class="cur" id="cur" aria-hidden="true"></div>
 <div class="cur-dot" id="curDot" aria-hidden="true"></div>
 <canvas id="fx" aria-hidden="true"></canvas>
+<div class="pal" id="pal" hidden>
+  <div class="pal-box glass lg lg-strong" role="dialog" aria-modal="true" aria-label="Search and shortcuts">
+    <input class="pal-in" id="palIn" type="text" placeholder="Search or jump to anything" autocomplete="off" spellcheck="false" role="combobox" aria-expanded="true" aria-controls="palList" aria-autocomplete="list">
+    <ul class="pal-list" id="palList" role="listbox" aria-label="Results"></ul>
+    <div class="pal-foot"><span class="kbd">Up</span> <span class="kbd">Down</span> to move, <span class="kbd">Enter</span> to choose, <span class="kbd">Esc</span> to close</div>
+  </div>
+</div>
+<div class="hire" id="hire">
+  <div class="hire-card glass lg lg-strong" id="hireCard" hidden>
+    <p>Actively looking for work. Choose how to reach me.</p>
+    <a class="btn btn-primary" href="mailto:sarjilpuri@gmail.com">Email me</a>
+    <a class="btn" href="tel:+447500631062">Call +44 7500 631062</a>
+    <a class="btn" href="https://linkedin.com/in/sarjilpuri-gosai-b03b27199" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+  </div>
+  <button class="btn btn-primary" type="button" id="hireBtn" aria-expanded="false" aria-controls="hireCard">Hire me</button>
+</div>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs id="lensDefs"></defs><defs><linearGradient id="ringGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFB627"/><stop offset=".55" stop-color="#FF4FD8"/><stop offset="1" stop-color="#7C6CFF"/></linearGradient></defs></svg>
 
 <header class="nav">
@@ -685,6 +825,7 @@ main:focus { outline: none; }
       <a href="#contact">Contact</a>
     </nav>
     <div class="nav-actions">
+      <button class="icon-btn" id="palBtn" type="button" aria-label="Search and shortcuts, Control K"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="6"/><path d="m20 20-4.5-4.5"/></svg></button>
       <button class="icon-btn" id="themeBtn" type="button" aria-label="Switch between light and dark colours">
         <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 3a9 9 0 0 1 0 18z" fill="currentColor"/></svg>
       </button>
@@ -709,6 +850,7 @@ main:focus { outline: none; }
       <div class="menu-cta">
         <a class="btn btn-primary" href="Sarjilpuri_Gosai_CV.pdf" download data-alt="Request my CV"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11"/><path d="m7 11 5 5 5-5"/><path d="M5 20h14"/></svg><span class="lbl">Download CV (PDF)</span></a>
         <a class="btn" href="mailto:sarjilpuri@gmail.com">Email me</a>
+        <button class="btn" type="button" data-open-pal>Search and shortcuts</button>
       </div>
     </div></div>
   </div>
@@ -726,9 +868,6 @@ main:focus { outline: none; }
 <main id="main" tabindex="-1">
 
   <section class="hero" id="hero" aria-labelledby="name">
-    <canvas id="cosmos" aria-hidden="true"></canvas>
-    <div class="cos-tip" id="cosTip" aria-hidden="true"></div>
-
     <div class="wrap hero-in">
       <div class="hero-copy">
         <div class="ident">
@@ -763,6 +902,7 @@ main:focus { outline: none; }
           </ul>
         </div>
         <p class="cos-hint" aria-hidden="true"><span class="mouse"></span><span id="hintText">Illustration: each dot stands for one of the 500+ products. Drag or click the sphere.</span></p>
+        <button class="btn btn-sm quick-btn" id="quickBtn" type="button" aria-pressed="false">30-second version</button>
       </div>
     </div>
 
@@ -849,10 +989,53 @@ main:focus { outline: none; }
       </article>
     </div>
     <p class="results-note">Figures are approximate.</p>
+    <p class="quick-exit"><button class="btn" type="button" id="quickOff">Show the full story</button></p>
+  </section>
+
+  <section class="sec" id="sim" aria-labelledby="sim-h">
+    <p class="idx"><b>02</b>Try it</p>
+    <h2 class="big md" id="sim-h" data-scrub>Run a trading day</h2>
+    <p class="sub">A simplified model that shows how I think about price, promotions, email and stock. The numbers are an illustration, not real data.</p>
+    <div class="sim glass">
+      <div class="sim-ctl">
+        <div class="ctl">
+          <label for="price"><span>Price change</span><output id="priceOut" for="price">0%</output></label>
+          <input type="range" id="price" min="-15" max="15" step="1" value="0">
+        </div>
+        <fieldset class="ctl">
+          <legend>Promotion</legend>
+          <div class="pills">
+            <label class="pill"><input type="radio" name="promo" value="none" checked><span>None</span></label>
+            <label class="pill"><input type="radio" name="promo" value="off10"><span>10% off</span></label>
+            <label class="pill"><input type="radio" name="promo" value="bundle"><span>Bundle offer</span></label>
+          </div>
+        </fieldset>
+        <fieldset class="ctl">
+          <legend>Email flow</legend>
+          <div class="pills">
+            <label class="pill"><input type="checkbox" id="flow"><span>Segmented automated flow</span></label>
+          </div>
+        </fieldset>
+        <div class="ctl">
+          <div class="ctl-row"><span class="ctl-l">Stock and price mismatches</span><output id="mmOut">12</output></div>
+          <button class="btn btn-sm" type="button" id="checkBtn">Run the daily check</button>
+        </div>
+      </div>
+      <div class="sim-out">
+        <div class="kpis">
+          <div class="kpi"><span class="k" id="kConv">2.0%</span><span class="l">Conversion</span></div>
+          <div class="kpi"><span class="k" id="kRev">100</span><span class="l">Revenue index</span></div>
+          <div class="kpi"><span class="k" id="kProfit">100</span><span class="l">Profit index</span></div>
+        </div>
+        <div class="chart" id="simChart" aria-hidden="true"></div>
+        <p class="chart-cap" aria-hidden="true">Profit index across price changes from minus 15% to plus 15%</p>
+        <p class="verdict" id="verdict" aria-live="polite"></p>
+      </div>
+    </div>
   </section>
 
   <section class="sec" id="about" aria-labelledby="about-h">
-    <p class="idx"><b>02</b>About</p>
+    <p class="idx"><b>03</b>About</p>
     <h2 class="big" id="about-h" data-scrub>About</h2>
     <p class="pull" id="pull"><span class="w">Keeping</span> <span class="w">a</span> <span class="w">500+</span> <span class="w">item</span> <span class="w">catalogue</span> <span class="w">accurate</span> <span class="w">and</span> <span class="w">priced</span> <span class="w">sensibly</span> <span class="w">through</span> <span class="w">every</span> <span class="w">promotion</span> <span class="w">and</span> <span class="w">seasonal</span> <span class="w">event.</span></p>
     <div class="about">
@@ -871,39 +1054,43 @@ main:focus { outline: none; }
   </section>
 
   <section class="sec" id="work" aria-labelledby="work-h">
-    <p class="idx"><b>03</b>What I do</p>
+    <p class="idx"><b>04</b>What I do</p>
     <h2 class="big" id="work-h" data-scrub>What I do</h2>
     <div class="bento">
-      <article class="bcard b1 glass spot" data-tilt>
+      <article class="bcard b1 glass spot" data-tilt data-skill="trading">
         <div class="ico"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12V4h8l9 9-8 8z"/><circle cx="7.5" cy="8.5" r="1.3"/></svg></div>
         <h3>Online trading and merchandising</h3>
         <p>Product listings, pricing and variants, inventory, catalogue audits and data accuracy. Merchandising and promotional placement planned around the trading calendar for seasonal campaigns.</p>
         <ul class="tags"><li>Shopify</li><li>WooCommerce</li><li>WordPress</li></ul>
+        <button class="skill-btn" type="button" data-skill="trading" aria-pressed="false">Show it in my experience</button>
       </article>
-      <article class="bcard b2 glass spot" data-tilt>
+      <article class="bcard b2 glass spot" data-tilt data-skill="analysis">
         <div class="ico"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="6"/><path d="m20 20-4.5-4.5"/></svg></div>
         <h3>Commercial and market analysis</h3>
         <p>Ongoing competitor and market monitoring, with input into pricing and positioning, plus category-level reviews of the catalogue.</p>
         <ul class="tags"><li>Competitor tracking</li><li>Pricing input</li><li>Catalogue review</li></ul>
+        <button class="skill-btn" type="button" data-skill="analysis" aria-pressed="false">Show it in my experience</button>
       </article>
-      <article class="bcard b3 glass spot" data-tilt>
+      <article class="bcard b3 glass spot" data-tilt data-skill="tech">
         <div class="ico"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m8 8-5 4 5 4M16 8l5 4-5 4M14 5l-4 14"/></svg></div>
         <h3>Working with technical teams</h3>
         <p>A computer engineering background and hands-on site builds let me talk to developers and IT directly. I'm used to coordinating stock and pricing updates across a business.</p>
         <ul class="tags"><li>Figma</li><li>Adobe XD</li><li>Photoshop</li><li>Illustrator</li></ul>
+        <button class="skill-btn" type="button" data-skill="tech" aria-pressed="false">Show it in my experience</button>
       </article>
-      <article class="bcard b4 glass spot" data-tilt>
+      <article class="bcard b4 glass spot" data-tilt data-skill="content">
         <div class="ico"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg></div>
         <h3>Content and digital marketing</h3>
         <p>Product and category copy in the brand's voice, email campaigns with segmentation and automated flows, social and promotional content, and on-page and technical SEO.</p>
         <ul class="tags"><li>Klaviyo</li><li>Mailchimp</li><li>Canva</li><li>SEO certified</li></ul>
+        <button class="skill-btn" type="button" data-skill="content" aria-pressed="false">Show it in my experience</button>
       </article>
     </div>
     <p class="also">Also comfortable in Microsoft Office and Google Workspace.</p>
   </section>
 
   <section class="sec" id="experience" aria-labelledby="exp-h">
-    <p class="idx"><b>04</b>Experience</p>
+    <p class="idx"><b>05</b>Experience</p>
     <h2 class="big" id="exp-h" data-scrub>Experience</h2>
     <div class="tl" id="tl">
       <div class="tl-line" aria-hidden="true"><i></i></div>
@@ -917,7 +1104,7 @@ main:focus { outline: none; }
           <p class="job-date"><strong>Oct 2022 – Jul 2026</strong><span>3 years 9 months</span></p>
         </div>
         <div class="job-cols">
-          <div>
+          <div data-skill="trading">
             <h4>Trading and merchandising</h4>
             <ul>
               <li>Uploaded and maintained 500+ products on Shopify: descriptions, images, pricing, sizing and variants, tags and inventory.</li>
@@ -925,14 +1112,14 @@ main:focus { outline: none; }
               <li>Checked stock and pricing daily and coordinated updates across the business so availability and prices stayed aligned.</li>
             </ul>
           </div>
-          <div>
+          <div data-skill="analysis">
             <h4>Analysis and SEO</h4>
             <ul>
               <li>Researched competitors and the market on an ongoing basis, and used the findings in pricing, positioning and content decisions.</li>
               <li>Applied on-page and technical SEO to product and category content to support organic visibility and site performance.</li>
             </ul>
           </div>
-          <div>
+          <div data-skill="content">
             <h4>Content, email and social</h4>
             <ul>
               <li>Wrote and edited product descriptions, category content and website copy in the brand's voice, ready to go live without a rework cycle.</li>
@@ -940,7 +1127,7 @@ main:focus { outline: none; }
               <li>Wrote email, social and promotional copy and made assets in Canva for each launch and campaign.</li>
             </ul>
           </div>
-          <div>
+          <div data-skill="tech">
             <h4>Working across teams</h4>
             <ul>
               <li>Used an engineering background and website-build experience to speak the same language as IT when site issues came up.</li>
@@ -954,7 +1141,7 @@ main:focus { outline: none; }
   </section>
 
   <section class="sec" id="projects" aria-labelledby="proj-h">
-    <p class="idx"><b>05</b>Project</p>
+    <p class="idx"><b>06</b>Project</p>
     <h2 class="big" id="proj-h" data-scrub>Project</h2>
     <article class="project glass spot" data-tilt>
       <svg viewBox="0 0 400 240" preserveAspectRatio="xMidYMid meet" aria-hidden="true" focusable="false">
@@ -988,7 +1175,7 @@ main:focus { outline: none; }
   </section>
 
   <section class="sec" id="education" aria-labelledby="edu-h">
-    <p class="idx"><b>06</b>Education</p>
+    <p class="idx"><b>07</b>Education</p>
     <h2 class="big" id="edu-h" data-scrub>Education</h2>
     <div class="edu">
       <article class="edu-card glass spot" data-tilt>
@@ -1016,7 +1203,7 @@ main:focus { outline: none; }
 
 <section class="contact" id="contact" aria-labelledby="contact-h">
   <div class="wrap">
-    <p class="idx"><b>07</b>Contact</p>
+    <p class="idx"><b>08</b>Contact</p>
     <div class="panel glass spot">
       <div class="c-left">
         <h2 id="contact-h">Let's talk about your next hire</h2>
@@ -1240,137 +1427,282 @@ main:focus { outline: none; }
     });
   }
 
-  /* ---- The product cosmos: one dot for each product, 500 of them ---- */
+  /* ---- The story sphere: 500 dots that change shape as you scroll ---- */
   var cosmos = (function () {
     var cv = document.getElementById('cosmos');
     if (!cv || !cv.getContext) return null;
     var c = cv.getContext('2d');
     var tip = document.getElementById('cosTip');
-    var W = 0, H = 0, R = 200, cxp = 0, cyp = 0, hp = 0;
+    var W = 0, H = 0;
     var N = window.innerWidth < 700 ? 300 : 500;
-    var P = [], E = [], S = [];
-    var golden = Math.PI * (3 - Math.sqrt(5));
-    var i, a, b;
-    for (i = 0; i < N; i++) {
-      var yy = 1 - (i / (N - 1)) * 2, rr = Math.sqrt(1 - yy * yy), th = i * golden;
-      P.push({ x: Math.cos(th) * rr, y: yy, z: Math.sin(th) * rr, sx: 0, sy: 0, sz: 0, s: 1, ox: 0, oy: 0, f: i % 11 === 0, k: 0 });
-    }
-    var seen = {};
-    for (a = 0; a < N; a++) {
-      var best = [-2, -2], bi = [-1, -1];
-      for (b = 0; b < N; b++) {
-        if (a === b) continue;
-        var d = P[a].x * P[b].x + P[a].y * P[b].y + P[a].z * P[b].z;
-        if (d > best[0]) { best[1] = best[0]; bi[1] = bi[0]; best[0] = d; bi[0] = b; }
-        else if (d > best[1]) { best[1] = d; bi[1] = b; }
+    var TAU = Math.PI * 2, golden = Math.PI * (3 - Math.sqrt(5));
+    var i, k, b;
+
+    /* every target shape is made from the same N dots */
+    var shapes = {};
+    (function () {
+      var s = [], y, r, th;
+      for (i = 0; i < N; i++) { y = 1 - (i / (N - 1)) * 2; r = Math.sqrt(1 - y * y); th = i * golden; s.push([Math.cos(th) * r, y, Math.sin(th) * r]); }
+      shapes.sphere = s;
+
+      var nb = 9, hs = [], sum = 0, ch = [], used = 0, cnt;
+      for (b = 0; b < nb; b++) { var hh = 0.22 + 0.78 * Math.pow(b / (nb - 1), 0.85); hs.push(hh); sum += hh; }
+      for (b = 0; b < nb; b++) {
+        cnt = b === nb - 1 ? N - used : Math.round(N * hs[b] / sum); used += cnt;
+        for (k = 0; k < cnt; k++) ch.push([-0.9 + 1.8 * b / (nb - 1), -0.8 + 1.6 * hs[b] * (k / Math.max(cnt - 1, 1)), k % 2 ? 0.09 : -0.09]);
       }
-      bi.forEach(function (j) {
-        var key = a < j ? a + '-' + j : j + '-' + a;
-        if (!seen[key]) { seen[key] = 1; E.push([a, j]); }
-      });
+      shapes.chart = ch;
+
+      var g = [], cols = Math.ceil(Math.sqrt(N * 1.25)), rows = Math.ceil(N / cols);
+      for (i = 0; i < N; i++) g.push([-1 + 2 * ((i % cols) / (cols - 1)), -0.75 + 1.5 * (Math.floor(i / cols) / Math.max(rows - 1, 1)), 0]);
+      shapes.grid = g;
+
+      var t = [];
+      for (i = 0; i < N; i++) {
+        var u = i * golden, v = i * golden * 3, rr2 = 0.7 + 0.3 * Math.cos(v);
+        t.push([rr2 * Math.cos(u), 0.3 * Math.sin(v), rr2 * Math.sin(u)]);
+      }
+      shapes.torus = t;
+
+      var gx = [[-0.62, 0.5], [0.62, 0.5], [-0.62, -0.5], [0.62, -0.5]], ga = [], m = Math.ceil(N / 4);
+      for (i = 0; i < N; i++) {
+        var cl = i % 4, j = Math.floor(i / 4);
+        var y2 = 1 - (j / Math.max(m - 1, 1)) * 2, r2 = Math.sqrt(Math.max(0, 1 - y2 * y2)), th2 = j * golden;
+        ga.push([gx[cl][0] + 0.36 * Math.cos(th2) * r2, gx[cl][1] + 0.36 * y2, 0.36 * Math.sin(th2) * r2]);
+      }
+      shapes.galaxy = ga;
+
+      var hx = [], nStrand = Math.round(N * 0.78), per = Math.floor(nStrand / 2);
+      for (i = 0; i < nStrand; i++) {
+        var st = i % 2, q = Math.floor(i / 2) / Math.max(per - 1, 1), yv = -1 + 2 * q, an = yv * 3 * Math.PI + st * Math.PI;
+        hx.push([0.55 * Math.cos(an), yv, 0.55 * Math.sin(an)]);
+      }
+      var nr = N - nStrand, rungs = 9;
+      for (i = 0; i < nr; i++) {
+        var rg = i % rungs, yv2 = -0.92 + 1.84 * rg / (rungs - 1), an2 = yv2 * 3 * Math.PI;
+        var f = Math.floor(i / rungs) / Math.max(Math.ceil(nr / rungs) - 1, 1);
+        hx.push([0.55 * Math.cos(an2) * (1 - 2 * f), yv2, 0.55 * Math.sin(an2) * (1 - 2 * f)]);
+      }
+      shapes.helix = hx;
+
+      var cb = [], V = [[-1, -1, -1], [1, -1, -1], [1, 1, -1], [-1, 1, -1], [-1, -1, 1], [1, -1, 1], [1, 1, 1], [-1, 1, 1]];
+      var E12 = [[0, 1], [1, 2], [2, 3], [3, 0], [4, 5], [5, 6], [6, 7], [7, 4], [0, 4], [1, 5], [2, 6], [3, 7]];
+      for (i = 0; i < N; i++) {
+        var e = E12[i % 12], tt = (Math.floor(i / 12) + 0.5) / Math.ceil(N / 12);
+        cb.push([(V[e[0]][0] + (V[e[1]][0] - V[e[0]][0]) * tt) * 0.66, (V[e[0]][1] + (V[e[1]][1] - V[e[0]][1]) * tt) * 0.66, (V[e[0]][2] + (V[e[1]][2] - V[e[0]][2]) * tt) * 0.66]);
+      }
+      shapes.cube = cb;
+
+      var ev = [], nPer = Math.round(N * 0.62), hw = 0.95, hh2 = 0.62, L = 4 * (hw + hh2);
+      for (i = 0; i < nPer; i++) {
+        var d = (i / nPer) * L, px, py;
+        if (d < 2 * hw) { px = -hw + d; py = hh2; }
+        else if (d < 2 * hw + 2 * hh2) { px = hw; py = hh2 - (d - 2 * hw); }
+        else if (d < 4 * hw + 2 * hh2) { px = hw - (d - 2 * hw - 2 * hh2); py = -hh2; }
+        else { px = -hw; py = -hh2 + (d - 4 * hw - 2 * hh2); }
+        ev.push([px, py, (i % 2 ? 0.05 : -0.05)]);
+      }
+      var nFl = N - nPer;
+      for (i = 0; i < nFl; i++) {
+        var side = i % 2 ? 1 : -1, tf = (Math.floor(i / 2) + 0.5) / Math.ceil(nFl / 2);
+        ev.push([side * hw * (1 - tf), hh2 - (hh2 + 0.08) * tf, 0]);
+      }
+      shapes.envelope = ev;
+    })();
+
+    var P = [];
+    for (i = 0; i < N; i++) {
+      var h0 = shapes.sphere[i];
+      P.push({ hx: h0[0], hy: h0[1], hz: h0[2], x: h0[0], y: h0[1], z: h0[2], tx: h0[0], ty: h0[1], tz: h0[2], sx: 0, sy: 0, sz: 0, s: 1, ox: 0, oy: 0, f: i % 11 === 0, k: 0, cl: i % 4 });
     }
-    for (i = 0; i < 150; i++) S.push({ x: Math.random(), y: Math.random(), z: 0.25 + Math.random() * 0.75, t: Math.random() * 6 });
-    var order = P.map(function (_, k) { return k; });
+    var edgeCache = {};
+    function edgesFor(name) {
+      if (edgeCache[name]) return edgeCache[name];
+      var S = shapes[name], E = [], seen = {}, a, bb;
+      for (a = 0; a < N; a++) {
+        var d0 = 1e9, d1 = 1e9, i0 = -1, i1 = -1;
+        for (bb = 0; bb < N; bb++) {
+          if (a === bb) continue;
+          var dx = S[a][0] - S[bb][0], dy = S[a][1] - S[bb][1], dz = S[a][2] - S[bb][2], dd = dx * dx + dy * dy + dz * dz;
+          if (dd < d0) { d1 = d0; i1 = i0; d0 = dd; i0 = bb; }
+          else if (dd < d1) { d1 = dd; i1 = bb; }
+        }
+        [i0, i1].forEach(function (j) {
+          if (j < 0) return;
+          var key = a < j ? a + '-' + j : j + '-' + a;
+          if (!seen[key]) { seen[key] = 1; E.push([a, j]); }
+        });
+      }
+      edgeCache[name] = E;
+      return E;
+    }
+
+    var STAGES = [['hero', 'sphere'], ['results', 'chart'], ['sim', 'grid'], ['about', 'torus'], ['work', 'galaxy'], ['experience', 'helix'], ['projects', 'cube'], ['education', 'sphere'], ['contact', 'envelope']];
+    var els = STAGES.map(function (s) { return document.getElementById(s[0]); });
+    var stageIdx = 0, shapeName = 'sphere';
+    var SPIN = { sphere: 1, torus: 1, galaxy: 1, helix: 1, cube: 1 };
     var ry = 0.6, rx = 0.3, vry = 0, parX = 0, parY = 0;
-    var dragging = false, lastX = 0, lastY = 0, moved = 0;
+    var dragging = false, lastX = 0, lastY = 0, moved = 0, gyroOn = false;
     var pulses = [], nextAuto = 900, hover = -1;
-    var visible = true, needStatic = true, lite = false, frames = 0, sumDt = 0;
+    var needStatic = true, lite = false, frames = 0, sumDt = 0, gal = 0, focus = -1, focusAmt = 0, settle = 1;
+    var view = { cx: 0, cy: 0, R: 200, a: 1 }, tv = { cx: 0, cy: 0, R: 200, a: 1 }, viewReady = false;
+    var order = P.map(function (_, q) { return q; });
     var pal = {};
     function theme() {
       var light = root.getAttribute('data-theme') === 'light';
       pal = light
-        ? { dot: '40,48,120', line: '70,80,170', feat: '217,142,0', hit: '194,37,143', glow: '124,108,255', star: '40,48,120' }
-        : { dot: '205,214,255', line: '140,152,255', feat: '255,182,39', hit: '255,79,216', glow: '124,108,255', star: '255,255,255' };
+        ? { dot: '40,48,120', line: '70,80,170', feat: '217,142,0', hit: '194,37,143', glow: '124,108,255', star: '40,48,120', cl: ['217,142,0', '10,143,168', '91,75,219', '194,37,143'] }
+        : { dot: '205,214,255', line: '140,152,255', feat: '255,182,39', hit: '255,79,216', glow: '124,108,255', star: '255,255,255', cl: ['255,182,39', '34,211,238', '124,108,255', '255,79,216'] };
       needStatic = true;
     }
     theme();
-    function resize() {
-      var rect = hero.getBoundingClientRect();
-      var dpr = Math.min(window.devicePixelRatio || 1, 2);
-      W = Math.round(rect.width); H = Math.round(rect.height);
-      cv.width = W * dpr; cv.height = H * dpr;
-      c.setTransform(dpr, 0, 0, dpr, 0, 0);
-      if (window.matchMedia('(min-width: 1200px)').matches) {
-        var sr = hero.querySelector('.hero-side').getBoundingClientRect();
-        cxp = sr.left - rect.left + sr.width / 2;
-        cyp = H * 0.43;
-        R = Math.max(120, Math.min(H * 0.3, 270, W - cxp - 14, cxp - 40));
-        hero.style.removeProperty('--sph');
-      } else {
-        R = Math.max(90, Math.min(W * 0.32, 170, window.innerHeight * 0.3));
-        cxp = W / 2;
-        cyp = 88 + R + 6;
-        hero.style.setProperty('--sph', Math.round(cyp + R + 30) + 'px');
+
+    function setStage(idx) {
+      stageIdx = idx; shapeName = STAGES[idx][1];
+      var S = shapes[shapeName];
+      for (var q = 0; q < N; q++) {
+        P[q].tx = S[q][0]; P[q].ty = S[q][1]; P[q].tz = S[q][2];
+        if (motionOff()) { P[q].x = P[q].tx; P[q].y = P[q].ty; P[q].z = P[q].tz; }
       }
       needStatic = true;
     }
+    function detect() {
+      var mid = window.innerHeight * 0.5, found = 0;
+      for (var q = 0; q < STAGES.length; q++) {
+        var e = els[q];
+        if (!e || !e.offsetHeight) continue;
+        var r = e.getBoundingClientRect();
+        if (q === 0) { if (r.bottom > mid) return 0; continue; }
+        if (r.top <= mid) found = q;
+      }
+      return found;
+    }
+    function heroRoom() {
+      var narrow = W < 1200;
+      var hr = hero.getBoundingClientRect();
+      var R;
+      if (narrow) {
+        R = Math.max(90, Math.min(W * 0.32, 170, H * 0.3));
+        return { R: R, cx: W / 2, cy: hr.top + 88 + R + 6, pad: Math.round(88 + R + 6 + R + 30) };
+      }
+      var sr = hero.querySelector('.hero-side').getBoundingClientRect();
+      var cx = sr.left + sr.width / 2;
+      R = Math.max(120, Math.min(hr.height * 0.3, 270, W - cx - 14, cx - 40));
+      return { R: R, cx: cx, cy: hr.top + hr.height * 0.43, pad: 0 };
+    }
+    function targetView() {
+      var narrow = W < 1200;
+      if (stageIdx === 0) {
+        var hr = heroRoom();
+        tv.cx = hr.cx; tv.cy = hr.cy; tv.R = hr.R; tv.a = 1;
+      } else {
+        tv.R = narrow ? Math.min(W * 0.4, 170) : Math.min(H * 0.34, W * 0.26, 300);
+        tv.cx = W * 0.5;
+        tv.cy = H * 0.5;
+        tv.a = narrow ? 0.16 : 0.45;
+        if (shapeName === 'galaxy') tv.a = narrow ? 0.3 : 0.7;
+        if (shapeName === 'envelope') tv.a = narrow ? 0.3 : 0.75;
+      }
+    }
+    function resize() {
+      var dpr = Math.min(window.devicePixelRatio || 1, 2);
+      W = window.innerWidth; H = window.innerHeight;
+      cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr);
+      c.setTransform(dpr, 0, 0, dpr, 0, 0);
+      var hr = heroRoom();
+      if (hr.pad) hero.style.setProperty('--sph', hr.pad + 'px'); else hero.style.removeProperty('--sph');
+      viewReady = false; needStatic = true;
+    }
     resize();
     window.addEventListener('resize', resize);
-    if ('ResizeObserver' in window) new ResizeObserver(resize).observe(hero);
-    if ('IntersectionObserver' in window) {
-      new IntersectionObserver(function (en) { visible = en[0].isIntersecting; }, { threshold: 0 }).observe(hero);
-    }
+    if ('ResizeObserver' in window) new ResizeObserver(function () { needStatic = true; }).observe(hero);
+
     function pulse(o) {
-      pulses.push({ x: o.x, y: o.y, z: o.z, t0: performance.now() });
+      pulses.push({ x: o.hx, y: o.hy, z: o.hz, t0: performance.now() });
       if (pulses.length > 4) pulses.shift();
     }
     function nearest(px, py, maxD) {
       var bestI = -1, bestD = maxD * maxD;
-      for (var k = 0; k < N; k++) {
-        var p = P[k];
+      for (var q = 0; q < N; q++) {
+        var p = P[q];
         if (p.sz < -0.15) continue;
         var dx = p.sx - px, dy = p.sy - py, dd = dx * dx + dy * dy;
-        if (dd < bestD) { bestD = dd; bestI = k; }
+        if (dd < bestD) { bestD = dd; bestI = q; }
       }
       return bestI;
     }
-    cv.addEventListener('pointerdown', function (e) {
+    hero.addEventListener('pointerdown', function (e) {
+      if (e.target !== hero || stageIdx !== 0) return;
       dragging = true; moved = 0; lastX = e.clientX; lastY = e.clientY; vry = 0;
-      cv.classList.add('drag');
-      try { cv.setPointerCapture(e.pointerId); } catch (err) {}
+      try { hero.setPointerCapture(e.pointerId); } catch (err) {}
     });
-    cv.addEventListener('pointermove', function (e) {
+    hero.addEventListener('pointermove', function (e) {
       if (!dragging) return;
       var dx = e.clientX - lastX, dy = e.clientY - lastY;
       lastX = e.clientX; lastY = e.clientY; moved += Math.abs(dx) + Math.abs(dy);
       ry += dx * 0.0065; rx = clamp(rx + dy * 0.004, -1.1, 1.1);
       vry = dx * 0.0004;
     });
-    function up(e) {
+    hero.addEventListener('pointerup', function (e) {
       if (!dragging) return;
-      dragging = false; cv.classList.remove('drag');
+      dragging = false;
       if (moved < 6) {
-        var r = hero.getBoundingClientRect();
-        var k = nearest(e.clientX - r.left, e.clientY - r.top, 90);
-        var o = k >= 0 ? P[k] : P[Math.floor(Math.random() * N)];
-        pulse(o);
+        var q = nearest(e.clientX, e.clientY, 90);
+        pulse(q >= 0 ? P[q] : P[Math.floor(Math.random() * N)]);
         burst(e.clientX, e.clientY, 14);
       }
+    });
+    hero.addEventListener('pointercancel', function () { dragging = false; });
+
+    if (!fine && window.DeviceOrientationEvent) {
+      var gyro = function (e) {
+        if (e.gamma == null) return;
+        mouse.nx = clamp(e.gamma / 35, -1, 1); mouse.ny = clamp(((e.beta || 0) - 50) / 35, -1, 1); gyroOn = true;
+      };
+      if (typeof window.DeviceOrientationEvent.requestPermission === 'function') {
+        hero.addEventListener('pointerdown', function once() {
+          hero.removeEventListener('pointerdown', once);
+          window.DeviceOrientationEvent.requestPermission().then(function (s) { if (s === 'granted') window.addEventListener('deviceorientation', gyro); }).catch(function () {});
+        });
+      } else window.addEventListener('deviceorientation', gyro);
     }
-    cv.addEventListener('pointerup', up);
-    cv.addEventListener('pointercancel', function () { dragging = false; cv.classList.remove('drag'); });
-    var last = 0;
+
     function draw(t, dt) {
       var still = motionOff();
-      if (!still && !dragging) ry += 0.000105 * dt + vry * dt * 0.06;
+      var now = performance.now();
+      var kv = still || !viewReady ? 1 : 1 - Math.exp(-dt / 150);
+      targetView();
+      view.cx += (tv.cx - view.cx) * kv; view.cy += (tv.cy - view.cy) * kv; view.R += (tv.R - view.R) * kv; view.a += (tv.a - view.a) * kv;
+      viewReady = true;
+      var km = still ? 1 : 1 - Math.exp(-dt / 230);
+      var q, p, moving = 0;
+      var spin = !!SPIN[shapeName];
+      if (!still && !dragging) {
+        if (spin) ry += 0.000105 * dt + vry * dt * 0.06;
+        else { var base = Math.round(ry / TAU) * TAU; ry += (base + Math.sin(now * 0.0004) * 0.45 - ry) * (1 - Math.exp(-dt / 300)); }
+        rx += ((spin ? 0.3 : 0.12) - rx) * (1 - Math.exp(-dt / 600));
+      }
       vry *= 0.95;
-      var hr = hero.getBoundingClientRect();
-      var mx = mouse.x - hr.left, my = mouse.y - hr.top;
-      var inHero = fine && mx > 0 && my > 0 && mx < W && my < H;
-      parX += ((inHero && !still ? mouse.nx * 0.35 : 0) - parX) * 0.05;
-      parY += ((inHero && !still ? mouse.ny * 0.22 : 0) - parY) * 0.05;
+      var inHero = stageIdx === 0 && fine && mouse.x > 0;
+      parX += (((inHero || gyroOn) && !still ? mouse.nx * 0.35 : 0) - parX) * 0.05;
+      parY += (((inHero || gyroOn) && !still ? mouse.ny * 0.22 : 0) - parY) * 0.05;
       var ryE = ry + parX, rxE = rx + parY;
       var cY = Math.cos(ryE), sY = Math.sin(ryE), cX = Math.cos(rxE), sX = Math.sin(rxE);
-      var scale = R * (1 - hp * 0.32), cyy = cyp + hp * 80;
-      var now = performance.now();
-      if (!still && visible && now > nextAuto) { pulse(P[Math.floor(Math.random() * N)]); nextAuto = now + 3400 + Math.random() * 2400; }
-      var k, p;
-      for (k = 0; k < N; k++) {
-        p = P[k];
+      var scale = view.R;
+      gal += ((shapeName === 'galaxy' ? 1 : 0) - gal) * (still ? 1 : 0.08);
+      focusAmt += ((focus >= 0 ? 1 : 0) - focusAmt) * (still ? 1 : 0.12);
+      if (!still && stageIdx === 0 && now > nextAuto) { pulse(P[Math.floor(Math.random() * N)]); nextAuto = now + 3400 + Math.random() * 2400; }
+      var mx = mouse.x, my = mouse.y;
+      for (q = 0; q < N; q++) {
+        p = P[q];
+        var kq = km * (0.8 + 0.4 * ((q * 7) % 10) / 10);
+        var ex = p.tx - p.x, ey = p.ty - p.y, ez = p.tz - p.z;
+        p.x += ex * kq; p.y += ey * kq; p.z += ez * kq;
+        if (q < 80) moving += Math.abs(ex) + Math.abs(ey) + Math.abs(ez);
         var x1 = p.x * cY + p.z * sY, z1 = -p.x * sY + p.z * cY;
         var y1 = p.y * cX - z1 * sX, z2 = p.y * sX + z1 * cX;
         var s = 2.8 / (2.8 - z2);
-        var px = cxp + x1 * scale * s, py = cyy + y1 * scale * s;
+        var px = view.cx + x1 * scale * s, py = view.cy + y1 * scale * s;
         var tx = 0, ty = 0;
         if (inHero && !still) {
           var dx = px - mx, dy = py - my, dd = Math.sqrt(dx * dx + dy * dy);
@@ -1379,63 +1711,65 @@ main:focus { outline: none; }
         p.ox += (tx - p.ox) * 0.16; p.oy += (ty - p.oy) * 0.16;
         p.sx = px + p.ox; p.sy = py + p.oy; p.sz = z2; p.s = s;
         var boost = 0;
-        for (var q = 0; q < pulses.length; q++) {
-          var pl = pulses[q], age = now - pl.t0;
+        for (var w = 0; w < pulses.length; w++) {
+          var pl = pulses[w], age = now - pl.t0;
           if (age > 2800) continue;
-          var ang = Math.acos(clamp(p.x * pl.x + p.y * pl.y + p.z * pl.z, -1, 1));
-          var wf = age * 0.0017, g = (ang - wf) / 0.22;
-          var bb = Math.exp(-g * g) * (1 - age / 2800);
+          var ang = Math.acos(clamp(p.hx * pl.x + p.hy * pl.y + p.hz * pl.z, -1, 1));
+          var gg = (ang - age * 0.0017) / 0.22;
+          var bb = Math.exp(-gg * gg) * (1 - age / 2800);
           if (bb > boost) boost = bb;
         }
         p.k = boost;
       }
+      settle = clamp(1 - (moving / 80) * 2.2, 0, 1);
       order.sort(function (u, v) { return P[u].sz - P[v].sz; });
       hover = (inHero && !still && !dragging) ? nearest(mx, my, 24) : -1;
 
       c.clearRect(0, 0, W, H);
-      // stars
-      for (k = 0; k < S.length; k++) {
-        var st = S[k];
-        var sx = ((st.x * W - mouse.nx * 16 * st.z * (still ? 0 : 1) - now * 0.004 * st.z) % W + W) % W;
-        var sy = st.y * H - mouse.ny * 10 * st.z * (still ? 0 : 1);
-        c.fillStyle = 'rgba(' + pal.star + ',' + (0.22 + 0.3 * Math.sin(now * 0.0012 + st.t) * (still ? 0 : 1) + 0.2 * st.z).toFixed(3) + ')';
-        c.fillRect(sx, sy, st.z * 1.7, st.z * 1.7);
+      var st, star;
+      for (q = 0; q < 150; q++) {
+        star = stars[q];
+        var sx = ((star.x * W - mouse.nx * 16 * star.z * (still ? 0 : 1) - now * 0.004 * star.z) % W + W) % W;
+        var sy = star.y * H - mouse.ny * 10 * star.z * (still ? 0 : 1);
+        c.fillStyle = 'rgba(' + pal.star + ',' + (0.22 + 0.3 * Math.sin(now * 0.0012 + star.t) * (still ? 0 : 1) + 0.2 * star.z).toFixed(3) + ')';
+        c.fillRect(sx, sy, star.z * 1.7, star.z * 1.7);
       }
-      // glow behind the sphere
-      var gr = c.createRadialGradient(cxp, cyy, 0, cxp, cyy, scale * 1.7);
-      gr.addColorStop(0, 'rgba(' + pal.glow + ',0.20)');
-      gr.addColorStop(0.5, 'rgba(' + pal.glow + ',0.06)');
+      var gr = c.createRadialGradient(view.cx, view.cy, 0, view.cx, view.cy, scale * 1.7);
+      gr.addColorStop(0, 'rgba(' + pal.glow + ',' + (0.2 * view.a).toFixed(3) + ')');
+      gr.addColorStop(0.5, 'rgba(' + pal.glow + ',' + (0.06 * view.a).toFixed(3) + ')');
       gr.addColorStop(1, 'rgba(' + pal.glow + ',0)');
       c.fillStyle = gr;
       c.fillRect(0, 0, W, H);
-      // network lines
-      var buckets = [[], [], []];
-      for (k = 0; k < E.length; k++) {
-        var za = (P[E[k][0]].sz + P[E[k][1]].sz) / 2;
-        buckets[za < 0 ? 0 : za < 0.5 ? 1 : 2].push(E[k]);
+      var E = edgesFor(shapeName), buckets = [[], [], []];
+      for (q = 0; q < E.length; q++) {
+        var za = (P[E[q][0]].sz + P[E[q][1]].sz) / 2;
+        buckets[za < 0 ? 0 : za < 0.5 ? 1 : 2].push(E[q]);
       }
       var alphas = [0.05, 0.11, 0.2];
       c.lineWidth = 1;
       for (var bk = lite ? 1 : 0; bk < 3; bk++) {
-        c.strokeStyle = 'rgba(' + pal.line + ',' + alphas[bk] + ')';
+        c.strokeStyle = 'rgba(' + pal.line + ',' + (alphas[bk] * view.a * settle * settle).toFixed(3) + ')';
         c.beginPath();
-        for (k = 0; k < buckets[bk].length; k++) {
-          var e2 = buckets[bk][k];
+        for (q = 0; q < buckets[bk].length; q++) {
+          var e2 = buckets[bk][q];
           c.moveTo(P[e2[0]].sx, P[e2[0]].sy); c.lineTo(P[e2[1]].sx, P[e2[1]].sy);
         }
         c.stroke();
       }
-      // dots
-      var unit = R / 230;
-      for (k = 0; k < N; k++) {
-        p = P[order[k]];
+      var unit = view.R / 230;
+      for (q = 0; q < N; q++) {
+        p = P[order[q]];
         var dT = (p.sz + 1) / 2;
         var rad = (0.8 + 2.2 * dT) * unit * p.s;
         var col, al;
         if (p.k > 0.06) { col = pal.hit; al = 0.35 + 0.65 * p.k; rad *= 1 + p.k * 1.4; }
-        else if (p.f) { col = pal.feat; al = 0.5 + 0.5 * dT; rad *= 1.5; }
+        else if (gal > 0.5) {
+          col = pal.cl[p.cl]; al = 0.3 + 0.7 * dT;
+          if (focus >= 0) { if (p.cl === focus) rad *= 1 + 0.35 * focusAmt; else al *= 1 - 0.78 * focusAmt; }
+        } else if (p.f) { col = pal.feat; al = 0.5 + 0.5 * dT; rad *= 1.5; }
         else { col = pal.dot; al = 0.16 + 0.72 * dT; }
-        if ((p.f || p.k > 0.15) && !lite) {
+        al *= view.a;
+        if ((p.f || p.k > 0.15 || (gal > 0.5 && focus === p.cl)) && !lite) {
           c.fillStyle = 'rgba(' + col + ',' + (al * 0.16).toFixed(3) + ')';
           c.beginPath(); c.arc(p.sx, p.sy, rad * 3.2, 0, 6.2832); c.fill();
         }
@@ -1447,19 +1781,24 @@ main:focus { outline: none; }
         c.strokeStyle = 'rgba(' + pal.feat + ',0.95)'; c.lineWidth = 1.6;
         c.beginPath(); c.arc(hp2.sx, hp2.sy, 9 + 3 * Math.sin(now * 0.008), 0, 6.2832); c.stroke();
         tip.innerHTML = '<b>Product ' + (hover + 1) + '</b>';
-        var low = hp2.sy < 70;
+        var low = hp2.sy < 90;
         tip.style.left = clamp(hp2.sx, 70, W - 70) + 'px'; tip.style.top = (low ? hp2.sy + 44 : hp2.sy) + 'px';
         tip.style.transform = low ? 'translate(-50%, 0)' : 'translate(-50%, -190%)';
         tip.classList.add('on');
       } else tip.classList.remove('on');
-      cv.style.cursor = dragging ? 'grabbing' : (hover >= 0 ? 'pointer' : 'grab');
+      hero.style.cursor = dragging ? 'grabbing' : (stageIdx === 0 ? (hover >= 0 ? 'pointer' : 'grab') : '');
     }
+    var stars = [];
+    for (i = 0; i < 150; i++) stars.push({ x: Math.random(), y: Math.random(), z: 0.25 + Math.random() * 0.75, t: Math.random() * 6 });
+    var lastT = 0;
     return {
       theme: theme,
-      refresh: function () { needStatic = true; },
-      setHp: function (v) { hp = v; cv.style.opacity = (1 - v * 0.85).toFixed(3); if (motionOff()) needStatic = true; },
+      refresh: function () { for (var q = 0; q < N; q++) { P[q].x = P[q].tx; P[q].y = P[q].ty; P[q].z = P[q].tz; } needStatic = true; },
+      onScroll: function () { var idx = detect(); if (idx !== stageIdx) setStage(idx); needStatic = true; },
+      setFocus: function (v) { focus = v; needStatic = true; },
+      pulse: function () { pulse(P[Math.floor(Math.random() * N)]); },
       step: function (t, dt) {
-        if (document.hidden || !visible) return;
+        if (document.hidden) return;
         if (motionOff()) {
           if (needStatic) { draw(t, 0); needStatic = false; }
           return;
@@ -1467,7 +1806,7 @@ main:focus { outline: none; }
         draw(t, dt);
         needStatic = false;
         frames++; sumDt += dt;
-        if (frames === 120) { if (sumDt / frames > 30) lite = true; }
+        if (frames === 120 && sumDt / frames > 30) lite = true;
       }
     };
   })();
@@ -1535,7 +1874,7 @@ main:focus { outline: none; }
     }
     var h = clamp(1 - hero.getBoundingClientRect().bottom / (vh * 0.9), 0, 1);
     hero.style.setProperty('--hp', h.toFixed(3));
-    if (cosmos) cosmos.setHp(h);
+    if (cosmos) cosmos.onScroll();
   }
   function queueScrollFx() { if (!scrollQueued) { scrollQueued = true; requestAnimationFrame(scrollFx); } }
   window.addEventListener('scroll', queueScrollFx, { passive: true });
@@ -1549,6 +1888,7 @@ main:focus { outline: none; }
         if (!en.isIntersecting) return;
         var el = en.target;
         el.classList.add('in');
+        if (el.classList.contains('idx')) scramble(el);
         io.unobserve(el);
         setTimeout(function () {
           el.classList.remove('reveal', 'in');
@@ -1610,7 +1950,7 @@ main:focus { outline: none; }
         cur.classList.add('on'); curDot.classList.add('on'); glow.classList.add('on');
       }
       var t = e.target;
-      cur.classList.toggle('hot', !!(t.closest && t.closest('a, button, [data-tilt], .tool, #cosmos')));
+      cur.classList.toggle('hot', t === hero || !!(t.closest && t.closest('a, button, [data-tilt], .tool, label, input')));
       var spot = t.closest ? t.closest('.spot') : null;
       if (spot) {
         var sr = spot.getBoundingClientRect();
@@ -1664,6 +2004,248 @@ main:focus { outline: none; }
     });
   });
   requestAnimationFrame(tick);
+
+  /* ---- Scrambled labels that decode as they arrive ---- */
+  function scramble(el) {
+    if (motionOff()) return;
+    var node = null;
+    for (var n = 0; n < el.childNodes.length; n++) if (el.childNodes[n].nodeType === 3 && el.childNodes[n].nodeValue.trim()) { node = el.childNodes[n]; break; }
+    if (!node) return;
+    var fin = node.nodeValue, chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ0123456789#%&*', t0 = performance.now();
+    (function f(now) {
+      var p = Math.min((now - t0) / 700, 1), out = '';
+      for (var i = 0; i < fin.length; i++) out += fin[i] === ' ' ? ' ' : (i < fin.length * p ? fin[i] : chars[Math.floor(Math.random() * chars.length)]);
+      node.nodeValue = p < 1 ? out : fin;
+      if (p < 1) requestAnimationFrame(f);
+    })(t0);
+  }
+
+  /* ---- Run a trading day: a simplified, illustrative model ---- */
+  (function () {
+    var box = document.getElementById('sim');
+    if (!box) return;
+    var price = document.getElementById('price'), priceOut = document.getElementById('priceOut');
+    var flow = document.getElementById('flow'), mmOut = document.getElementById('mmOut'), checkBtn = document.getElementById('checkBtn');
+    var kConv = document.getElementById('kConv'), kRev = document.getElementById('kRev'), kProfit = document.getElementById('kProfit');
+    var chart = document.getElementById('simChart'), verdict = document.getElementById('verdict');
+    var mm = 12, busy = false;
+    function promo() { var r = box.querySelector('input[name="promo"]:checked'); return r ? r.value : 'none'; }
+    function model(p, pr, fl, m) {
+      var priceEff = 1 + p / 100, demand = 1 - 2.2 * (p / 100), aov = 1;
+      if (pr === 'off10') { priceEff *= 0.9; demand *= 1.18; }
+      if (pr === 'bundle') { aov = 1.12; demand *= 1.05; }
+      var conv = 2.0 * demand * (1 - 0.006 * m), em = fl ? 1.09 : 1;
+      return { conv: conv, rev: 100 * (conv * priceEff * aov * em) / 2.0, profit: 100 * (conv * aov * em * (priceEff - 0.6)) / 0.8 };
+    }
+    function render() {
+      var p = +price.value, pr = promo(), fl = flow.checked;
+      var cur = model(p, pr, fl, mm);
+      priceOut.textContent = (p > 0 ? '+' : '') + p + '%';
+      mmOut.textContent = mm;
+      kConv.textContent = cur.conv.toFixed(2) + '%';
+      kRev.textContent = Math.round(cur.rev);
+      kProfit.textContent = Math.round(cur.profit);
+      var best = -99, bestV = -1e9, bars = [], q;
+      for (q = -15; q <= 15; q++) { var v = model(q, pr, fl, mm).profit; if (v > bestV) { bestV = v; best = q; } }
+      for (q = -15; q <= 15; q += 5) bars.push({ p: q, v: model(q, pr, fl, mm).profit });
+      var max = Math.max.apply(null, bars.map(function (x) { return x.v; })), min = Math.min.apply(null, bars.map(function (x) { return x.v; })), svg = '<svg viewBox="0 0 300 130" preserveAspectRatio="none">';
+      bars.forEach(function (x, idx) {
+        var hgt = 14 + 96 * ((x.v - min) / Math.max(max - min, 1)), on = Math.abs(x.p - p) < 2.5;
+        svg += '<rect x="' + (10 + idx * 41) + '" y="' + (118 - hgt) + '" width="30" height="' + hgt + '" rx="6" fill="' + (on ? 'var(--accent)' : 'var(--tile-bar)') + '"/>';
+        svg += '<text x="' + (25 + idx * 41) + '" y="128" text-anchor="middle" font-size="8" fill="var(--muted)">' + (x.p > 0 ? '+' : '') + x.p + '</text>';
+      });
+      chart.innerHTML = svg + '</svg>';
+      var msg = 'With these choices the best price change for profit is ' + (best > 0 ? '+' : '') + best + '%. Yours gives a profit index of ' + Math.round(cur.profit) + '.';
+      if (mm > 0) msg += ' ' + mm + ' mismatches are costing about ' + (mm * 0.6).toFixed(1) + '% of sales, so the daily check pays for itself.';
+      else msg += ' The stock check is clean.';
+      verdict.textContent = msg;
+    }
+    price.addEventListener('input', render);
+    box.querySelectorAll('input[type="radio"], #flow').forEach(function (e) { e.addEventListener('change', render); });
+    checkBtn.addEventListener('click', function () {
+      if (busy) return;
+      if (mm === 0) { mm = 12; checkBtn.textContent = 'Run the daily check'; render(); return; }
+      busy = true;
+      var done = function () {
+        busy = false; checkBtn.textContent = 'Reset the day'; render();
+        var r = checkBtn.getBoundingClientRect(); burst(r.left + r.width / 2, r.top, 50);
+      };
+      if (motionOff()) { mm = 0; done(); return; }
+      var iv = setInterval(function () { mm--; render(); if (mm <= 0) { clearInterval(iv); done(); } }, 110);
+    });
+    render();
+  })();
+
+  /* ---- 30-second version ---- */
+  var quickBtn = document.getElementById('quickBtn'), quickOff = document.getElementById('quickOff');
+  function quickOn() { return root.getAttribute('data-quick') === 'on'; }
+  function setQuick(on) {
+    if (on) root.setAttribute('data-quick', 'on'); else root.removeAttribute('data-quick');
+    quickBtn.setAttribute('aria-pressed', on ? 'true' : 'false');
+    quickBtn.textContent = on ? 'Show the full page' : '30-second version';
+    window.scrollTo({ top: 0, behavior: 'auto' });
+    if (cosmos) { cosmos.onScroll(); cosmos.refresh(); }
+    scrollFx();
+  }
+  quickBtn.addEventListener('click', function () { setQuick(!quickOn()); });
+  quickOff.addEventListener('click', function () { setQuick(false); });
+  document.addEventListener('click', function (e) {
+    if (!quickOn()) return;
+    var a = e.target.closest ? e.target.closest('a[href^="#"]') : null;
+    if (!a) return;
+    var tgt = document.getElementById(a.getAttribute('href').slice(1));
+    if (tgt && !tgt.offsetHeight) setQuick(false);
+  }, true);
+
+  /* ---- Skills: highlight a cluster in the sphere and the matching experience ---- */
+  (function () {
+    var clusters = { trading: 0, analysis: 1, tech: 2, content: 3 };
+    var btns = [].slice.call(document.querySelectorAll('.skill-btn'));
+    var cols = [].slice.call(document.querySelectorAll('.job-cols > div[data-skill]'));
+    var pinned = null;
+    function apply(skill) {
+      if (cosmos) cosmos.setFocus(skill ? clusters[skill] : -1);
+      cols.forEach(function (d) { d.classList.toggle('hl', !!skill && d.getAttribute('data-skill') === skill); });
+    }
+    btns.forEach(function (b) {
+      var s = b.getAttribute('data-skill');
+      b.addEventListener('click', function () {
+        pinned = pinned === s ? null : s;
+        btns.forEach(function (o) {
+          var on = o.getAttribute('data-skill') === pinned;
+          o.setAttribute('aria-pressed', on ? 'true' : 'false');
+          o.textContent = on ? 'Highlighted in the sphere and my experience' : 'Show it in my experience';
+        });
+        apply(pinned);
+      });
+      var card = b.closest('.bcard');
+      card.addEventListener('mouseenter', function () { if (!pinned) apply(s); });
+      card.addEventListener('mouseleave', function () { if (!pinned) apply(null); });
+      b.addEventListener('focus', function () { if (!pinned) apply(s); });
+      b.addEventListener('blur', function () { if (!pinned) apply(null); });
+    });
+  })();
+
+  /* ---- Command palette ---- */
+  (function () {
+    var pal = document.getElementById('pal'), input = document.getElementById('palIn'), list = document.getElementById('palList');
+    if (!pal) return;
+    var items = [], active = 0, prev = null;
+    function go(id) {
+      return function () {
+        var el = document.getElementById(id);
+        if (el && !el.offsetHeight) setQuick(false);
+        el = document.getElementById(id);
+        if (el) el.scrollIntoView({ behavior: reduce || motionOff() ? 'auto' : 'smooth' });
+      };
+    }
+    var cmds = [
+      ['Go to', 'Results', 'achievements numbers', go('results')],
+      ['Go to', 'Run a trading day', 'try simulator price promotion', go('sim')],
+      ['Go to', 'About', 'profile', go('about')],
+      ['Go to', 'What I do', 'skills services', go('work')],
+      ['Go to', 'Experience', 'work history job', go('experience')],
+      ['Go to', 'Project', 'website college portal', go('projects')],
+      ['Go to', 'Education', 'degree certificates', go('education')],
+      ['Go to', 'Contact', 'email phone hire', go('contact')],
+      ['Actions', 'Download my CV', 'pdf resume', function () { var a = document.querySelector('[data-cv], a[download]'); if (a) a.click(); }],
+      ['Actions', 'Email me', 'mail message', function () { window.location.href = 'mailto:sarjilpuri@gmail.com'; }],
+      ['Actions', 'Copy my email address', 'clipboard', function () { var b2 = document.getElementById('copyBtn'); if (b2) b2.click(); }],
+      ['Actions', 'Call me', 'phone number', function () { window.location.href = 'tel:+447500631062'; }],
+      ['Actions', 'Open LinkedIn', 'profile social', function () { window.open('https://linkedin.com/in/sarjilpuri-gosai-b03b27199', '_blank', 'noopener'); }],
+      ['Actions', 'Switch light or dark', 'theme colours', function () { document.getElementById('themeBtn').click(); }],
+      ['Actions', 'Pause or play animations', 'motion', function () { var m2 = document.getElementById('motionBtn'); if (!m2.hidden) m2.click(); }],
+      ['Actions', 'Toggle the 30-second version', 'short summary quick', function () { setQuick(!quickOn()); }],
+      ['Actions', 'Send a pulse through the catalogue', 'sphere fun', function () { if (cosmos) cosmos.pulse(); window.scrollTo({ top: 0, behavior: 'auto' }); }]
+    ];
+    function render() {
+      var q = input.value.trim().toLowerCase().split(/\s+/).filter(Boolean);
+      items = cmds.filter(function (c) { var hay = (c[0] + ' ' + c[1] + ' ' + c[2]).toLowerCase(); return q.every(function (t) { return hay.indexOf(t) !== -1; }); });
+      list.innerHTML = '';
+      var lastG = '';
+      items.forEach(function (c, i) {
+        if (c[0] !== lastG) { lastG = c[0]; var g = document.createElement('li'); g.className = 'pal-g'; g.setAttribute('role', 'presentation'); g.textContent = c[0]; list.appendChild(g); }
+        var li = document.createElement('li');
+        li.className = 'pal-i'; li.id = 'pal-' + i; li.setAttribute('role', 'option'); li.textContent = c[1];
+        li.addEventListener('mousemove', function () { setActive(i); });
+        li.addEventListener('click', function () { run(i); });
+        list.appendChild(li);
+      });
+      if (!items.length) { var none = document.createElement('li'); none.className = 'pal-g'; none.textContent = 'No matches'; list.appendChild(none); }
+      setActive(0);
+    }
+    function setActive(i) {
+      active = Math.max(0, Math.min(i, items.length - 1));
+      [].forEach.call(list.querySelectorAll('.pal-i'), function (el, n) { el.setAttribute('aria-selected', n === active ? 'true' : 'false'); if (n === active) el.scrollIntoView({ block: 'nearest' }); });
+      input.setAttribute('aria-activedescendant', items.length ? 'pal-' + active : '');
+    }
+    function open() {
+      prev = document.activeElement;
+      pal.hidden = false; input.value = ''; render(); input.focus();
+    }
+    function close() { pal.hidden = true; if (prev && prev.focus) prev.focus(); }
+    function run(i) { var c = items[i]; if (!c) return; close(); setTimeout(c[3], 30); }
+    window.__openPalette = open;
+    input.addEventListener('input', render);
+    input.addEventListener('keydown', function (e) {
+      if (e.key === 'ArrowDown') { e.preventDefault(); setActive(active + 1); }
+      else if (e.key === 'ArrowUp') { e.preventDefault(); setActive(active - 1); }
+      else if (e.key === 'Enter') { e.preventDefault(); run(active); }
+      else if (e.key === 'Tab') { e.preventDefault(); }
+    });
+    pal.addEventListener('click', function (e) { if (e.target === pal) close(); });
+    document.addEventListener('keydown', function (e) {
+      if ((e.ctrlKey || e.metaKey) && (e.key === 'k' || e.key === 'K')) { e.preventDefault(); pal.hidden ? open() : close(); }
+      else if (e.key === 'Escape' && !pal.hidden) { e.preventDefault(); close(); }
+      else if (e.key === '/' && pal.hidden) {
+        var t = e.target, tag = t && t.tagName;
+        if (tag !== 'INPUT' && tag !== 'TEXTAREA' && !(t && t.isContentEditable)) { e.preventDefault(); open(); }
+      }
+    });
+    var palBtn = document.getElementById('palBtn');
+    if (palBtn) palBtn.addEventListener('click', open);
+    [].forEach.call(document.querySelectorAll('[data-open-pal]'), function (b2) { b2.addEventListener('click', function () { var mn = document.getElementById('menu'); if (mn) mn.classList.remove('open'); open(); }); });
+  })();
+
+  /* ---- Hire me pill ---- */
+  (function () {
+    var wrap = document.getElementById('hire'), btn = document.getElementById('hireBtn'), card = document.getElementById('hireCard');
+    if (!wrap) return;
+    var contactSeen2 = false;
+    function setOpen(o) { card.hidden = !o; btn.setAttribute('aria-expanded', o ? 'true' : 'false'); }
+    function upd() { wrap.classList.toggle('show', window.scrollY > 240 && !contactSeen2); if (!wrap.classList.contains('show')) setOpen(false); }
+    btn.addEventListener('click', function () { setOpen(card.hidden); });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !card.hidden) { setOpen(false); btn.focus(); } });
+    document.addEventListener('click', function (e) { if (!card.hidden && !wrap.contains(e.target)) setOpen(false); });
+    card.addEventListener('click', function (e) { if (e.target.closest && e.target.closest('a, button')) setTimeout(function () { setOpen(false); }, 50); });
+    window.addEventListener('scroll', upd, { passive: true });
+    if ('IntersectionObserver' in window) new IntersectionObserver(function (en) { contactSeen2 = en[0].isIntersecting; upd(); }, { threshold: 0.25 }).observe(document.getElementById('contact'));
+    upd();
+  })();
+
+  /* ---- Opening sequence (first visit in a session, skippable) ---- */
+  (function () {
+    var ov = document.getElementById('introOv');
+    if (!ov || !root.classList.contains('has-intro')) return;
+    try { sessionStorage.setItem('sg-intro', '1'); } catch (e) {}
+    var num = document.getElementById('introNum'), bar = document.getElementById('introBar'), t0 = performance.now(), done = false;
+    function finish() { if (done) return; done = true; root.classList.add('intro-done'); }
+    function frame(now) {
+      var p = Math.min((now - t0) / 1800, 1), e = 1 - Math.pow(1 - p, 3);
+      num.textContent = Math.round(500 * e); bar.style.transform = 'scaleX(' + e.toFixed(3) + ')';
+      if (p < 1 && !done) requestAnimationFrame(frame);
+    }
+    requestAnimationFrame(frame);
+    setTimeout(finish, 3300);
+    function skip() {
+      if (done) return;
+      root.classList.add('intro-skip');
+      ov.style.transition = 'opacity .25s ease'; ov.style.opacity = '0';
+      setTimeout(finish, 280);
+    }
+    document.getElementById('introSkip').addEventListener('click', skip);
+    document.addEventListener('keydown', skip, { once: true });
+  })();
 
   /* Count-up numbers */
   function countUp(el) {
