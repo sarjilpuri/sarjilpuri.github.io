@@ -785,6 +785,28 @@ html[data-quick="on"] .sec:not(#results), html[data-quick="on"] .tools-cap, html
 :root[data-theme="light"] .job-cols > div[data-skill] h4 { color: #6a4a00; }
 
 @media (prefers-reduced-motion: reduce) { .step .node, .step p { transition: none; } }
+
+/* ===== Skills at a glance: static, everything visible at once ===== */
+.skills { margin-top: 40px; }
+.skills h2 { font-size: clamp(26px, 3vw, 36px); line-height: 1.15; }
+.skills-sub { margin: 2px 0 12px; color: var(--muted); }
+.skill-rows { padding: 4px var(--card); }
+.lv1 { --c: #FFB627; }
+.lv2 { --c: #22D3EE; }
+.lv3 { --c: #7C6CFF; }
+.lvl-row { display: grid; grid-template-columns: 250px minmax(0, 1fr); gap: 8px 24px; align-items: center; padding: 12px 0; border-top: 1px solid var(--line); }
+.lvl-row:first-child { border-top: 0; }
+.lvl-row header { display: flex; align-items: center; gap: 12px; }
+.lvl-row h3 { font-size: 19px; line-height: 1.2; color: var(--c); }
+.lvl-row header p { margin: 2px 0 0; color: var(--muted); font-size: 13.5px; line-height: 1.35; }
+.meter { display: inline-flex; gap: 4px; flex: none; }
+.meter i { width: 7px; height: 22px; border-radius: 4px; background: var(--line); }
+.meter i.on { background: var(--c); box-shadow: 0 0 10px color-mix(in srgb, var(--c) 60%, transparent); }
+.chips { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; }
+.chips li { margin: 0; padding: 5px 11px; border-radius: 999px; font-size: 14px; line-height: 1.25; border: 1px solid color-mix(in srgb, var(--c) 38%, var(--line)); background: color-mix(in srgb, var(--c) 8%, transparent); }
+:root[data-theme="light"] .lvl-row h3 { color: color-mix(in srgb, var(--c) 55%, #1C2154); }
+@media (max-width: 900px) { .lvl-row { grid-template-columns: 1fr; gap: 10px; } }
+.skills + .sec { padding-top: 56px; }
 </style>
 </head>
 <body id="top">
@@ -929,37 +951,39 @@ html[data-quick="on"] .sec:not(#results), html[data-quick="on"] .tools-cap, html
 
 <div class="wrap">
 
-  <p class="tools-cap">Tools I work in</p>
-  <div class="tools" role="group" aria-label="Tools I use: Shopify, WooCommerce, WordPress, Klaviyo, Mailchimp, Canva, Figma, Adobe XD, Photoshop, Illustrator, Microsoft Office and Google Workspace">
-    <div class="track" aria-hidden="true">
-      <span class="tool">Shopify</span>
-      <span class="tool">WooCommerce</span>
-      <span class="tool">WordPress</span>
-      <span class="tool">Klaviyo</span>
-      <span class="tool">Mailchimp</span>
-      <span class="tool">Canva</span>
-      <span class="tool">Figma</span>
-      <span class="tool">Adobe XD</span>
-      <span class="tool">Photoshop</span>
-      <span class="tool">Illustrator</span>
-      <span class="tool">Microsoft Office</span>
-      <span class="tool">Google Workspace</span>
-      <span class="tool">SEO</span>
-      <span class="tool dup">Shopify</span>
-      <span class="tool dup">WooCommerce</span>
-      <span class="tool dup">WordPress</span>
-      <span class="tool dup">Klaviyo</span>
-      <span class="tool dup">Mailchimp</span>
-      <span class="tool dup">Canva</span>
-      <span class="tool dup">Figma</span>
-      <span class="tool dup">Adobe XD</span>
-      <span class="tool dup">Photoshop</span>
-      <span class="tool dup">Illustrator</span>
-      <span class="tool dup">Microsoft Office</span>
-      <span class="tool dup">Google Workspace</span>
-      <span class="tool dup">SEO</span>
+  <section class="skills" id="skills" aria-labelledby="skills-h">
+    <h2 id="skills-h">Skills at a glance</h2>
+    <p class="skills-sub">What I use every day, what I can work with, and what I know the basics of.</p>
+    <div class="skill-rows glass">
+      <div class="lvl-row lv1" role="group" aria-labelledby="lv1-h">
+        <header>
+          <span class="meter" aria-hidden="true"><i class="on"></i><i class="on"></i><i class="on"></i></span>
+          <div><h3 id="lv1-h">Confident</h3><p>Every day, no training needed</p></div>
+        </header>
+        <ul class="chips">
+          <li>Shopify (advanced)</li><li>Product listings and merchandising</li><li>Pricing, variants and inventory</li><li>Klaviyo</li><li>Mailchimp</li><li>Email segmentation and flows</li><li>Product and category copy</li><li>Competitor and market research</li><li>Canva</li>
+        </ul>
+      </div>
+      <div class="lvl-row lv2" role="group" aria-labelledby="lv2-h">
+        <header>
+          <span class="meter" aria-hidden="true"><i class="on"></i><i class="on"></i><i></i></span>
+          <div><h3 id="lv2-h">Intermediate</h3><p>Can work with these, a little training sharpens them</p></div>
+        </header>
+        <ul class="chips">
+          <li>On-page and technical SEO</li><li>Microsoft Office</li><li>Google Workspace</li><li>Adobe Photoshop</li><li>Adobe Illustrator</li><li>Adobe XD</li><li>Figma</li><li>UX design and research</li><li>Web design and building</li>
+        </ul>
+      </div>
+      <div class="lvl-row lv3" role="group" aria-labelledby="lv3-h">
+        <header>
+          <span class="meter" aria-hidden="true"><i class="on"></i><i></i><i></i></span>
+          <div><h3 id="lv3-h">Working knowledge</h3><p>Enough for basic tasks</p></div>
+        </header>
+        <ul class="chips">
+          <li>WooCommerce</li><li>WordPress</li><li>HTML and CSS</li><li>VFX and digital media</li>
+        </ul>
+      </div>
     </div>
-  </div>
+  </section>
 
   <section class="sec" id="results" aria-labelledby="results-h">
     <p class="idx"><b>01</b>Results</p>
@@ -1898,7 +1922,7 @@ html[data-quick="on"] .sec:not(#results), html[data-quick="on"] .tools-cap, html
         }, 1500);
       });
     }, { threshold: 0.08, rootMargin: '0px 0px -5% 0px' });
-    document.querySelectorAll('.idx, .tools-cap, .tools, .sub, .cycle-wrap, .result, .prose p, .glance, .bcard, .also, .job, .project, .edu-card, .cert, .langs, .panel').forEach(function (el) {
+    document.querySelectorAll('.idx, .sub, .cycle-wrap, .result, .prose p, .glance, .bcard, .also, .job, .project, .edu-card, .cert, .langs, .panel').forEach(function (el) {
       var idx = Array.prototype.indexOf.call(el.parentNode.children, el);
       el.style.setProperty('--rd', Math.min(idx * 80, 320) + 'ms');
       el.classList.add('reveal');
@@ -2095,6 +2119,7 @@ html[data-quick="on"] .sec:not(#results), html[data-quick="on"] .tools-cap, html
       };
     }
     var cmds = [
+      ['Go to', 'Skills at a glance', 'tools confident intermediate basic', go('skills')],
       ['Go to', 'Results', 'achievements numbers', go('results')],
       ['Go to', 'The trading cycle', 'process research price list campaign check', go('cycle')],
       ['Go to', 'About', 'profile', go('about')],
