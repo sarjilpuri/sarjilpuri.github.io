@@ -283,6 +283,19 @@ main:focus { outline: none; }
 :root { --sec: clamp(48px, 6vw, 80px); --card: 24px; --gap: 16px; }
 @media (max-width: 600px) { :root { --card: 20px; --gap: 12px; } }
 
+/* ===== Darker liquid glass ===== */
+:root {
+  --lg-bg: rgba(8, 10, 30, .55);
+  --lg-bg-mid: rgba(8, 10, 30, .68);
+  --lg-bg-strong: rgba(8, 10, 30, .86);
+  --lg-sheen: linear-gradient(160deg, rgba(255, 255, 255, .1), rgba(255, 255, 255, .015) 40%, rgba(255, 255, 255, 0) 60%, rgba(255, 255, 255, .05));
+}
+:root[data-theme="light"] {
+  --lg-bg: rgba(236, 240, 255, .55);
+  --lg-bg-mid: rgba(236, 240, 255, .68);
+  --lg-bg-strong: rgba(240, 243, 255, .9);
+}
+
 /* ===== Cursor, effects layer ===== */
 #fx { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 120; }
 .cur { position: fixed; left: 0; top: 0; width: 40px; height: 40px; margin: -20px 0 0 -20px; border: 1.5px solid rgba(255, 255, 255, .45); border-radius: 50%; pointer-events: none; z-index: 150; opacity: 0; transition: width .28s cubic-bezier(.2, .9, .2, 1), height .28s cubic-bezier(.2, .9, .2, 1), margin .28s cubic-bezier(.2, .9, .2, 1), background-color .25s ease, border-color .25s ease, opacity .3s ease; will-change: transform; }
@@ -309,7 +322,6 @@ main:focus { outline: none; }
 .hero-bar { pointer-events: auto; display: flex; flex-direction: column; align-items: flex-start; gap: 10px; padding: 12px 20px; border-radius: 22px; }
 .hero-bar .roles { margin: 0; display: flex; align-items: center; flex-wrap: wrap; gap: 8px 14px; }
 .hero-bar .roles p { margin: 0; white-space: nowrap; }
-.hero-bar .facts { margin: 0; }
 .hero-copy > * { pointer-events: auto; }
 .ident { display: flex; align-items: center; flex-wrap: wrap; gap: 14px; }
 .avatar { width: 62px; height: 62px; border-radius: 50%; padding: 2px; flex: none; background: conic-gradient(from 210deg, var(--accent), var(--mag), var(--violet), var(--cyan), var(--accent)); box-shadow: 0 0 34px -6px rgba(124, 108, 255, .8); animation: spinSlow 12s linear infinite; }
@@ -478,17 +490,14 @@ main:focus { outline: none; }
 
 /* ===== Contact ===== */
 .contact { position: relative; padding: var(--sec) 0 48px; overflow: hidden; scroll-margin-top: calc(-1 * var(--sec) + 8px); }
-@property --ang { syntax: '<angle>'; inherits: false; initial-value: 0deg; }
-@keyframes spin { to { --ang: 360deg; } }
 .panel {
-  position: relative; z-index: 1; display: grid; grid-template-columns: 1fr 1fr; gap: 24px clamp(24px, 4vw, 48px); align-items: center; padding: clamp(28px, 4vw, 48px); overflow: hidden; border-radius: 32px; border: 1.5px solid transparent;
-  background: var(--grain) padding-box, var(--panel-tint) padding-box, linear-gradient(color-mix(in srgb, var(--surface-solid) 88%, transparent), color-mix(in srgb, var(--surface-solid) 88%, transparent)) padding-box,
-    conic-gradient(from var(--ang), rgba(255, 255, 255, .1), var(--violet) 18%, var(--cyan) 32%, var(--accent) 48%, var(--mag) 62%, rgba(255, 255, 255, .1) 78%) border-box;
-  animation: spin 9s linear infinite;
+  position: relative; z-index: 1; display: grid; grid-template-columns: 1fr 1fr; gap: 24px clamp(24px, 4vw, 48px); align-items: center; padding: clamp(28px, 4vw, 48px); overflow: hidden; border-radius: 32px; border: 1px solid var(--line);
+  background: var(--grain), var(--panel-tint), linear-gradient(color-mix(in srgb, var(--surface-solid) 90%, transparent), color-mix(in srgb, var(--surface-solid) 90%, transparent));
 }
 .panel::before { content: ""; position: absolute; inset: 0; pointer-events: none; background: radial-gradient(500px circle at var(--sx, 85%) var(--sy, 12%), rgba(255, 182, 39, .26), transparent 62%); }
 .panel > * { position: relative; z-index: 1; }
 .panel h2 { font-size: clamp(34px, 4.4vw, 60px); line-height: 1; letter-spacing: -0.04em; max-width: 14ch; font-weight: 780; }
+.panel .facts { margin-top: 16px; }
 .panel p { max-width: 54ch; margin: 16px 0 0; font-size: 18px; color: var(--muted); }
 .c-right .cta-row { margin-top: 4px; }
 .mail-line { font-family: var(--display); font-weight: 650; font-size: clamp(22px, 3.2vw, 34px); margin: 0 0 6px !important; color: var(--ink) !important; word-break: break-word; }
@@ -633,14 +642,14 @@ main:focus { outline: none; }
   .b1, .b2, .b3, .b4 { grid-column: auto !important; }
   .sec { padding-top: 24px !important; break-inside: avoid; }
   .result, .bcard, .job, .edu-card, .cert { break-inside: avoid; }
-  .panel { background: #fff !important; animation: none; }
+  .panel { background: #fff !important; }
   .panel::before, .spot::after { display: none !important; }
 }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   .aurora::before, .status::before, .avatar, .avatar-in, .mouse::after { animation: none; }
   .ch { animation: none; opacity: 1; transform: none; filter: none; }
-  .hero-dash, .panel { animation: none; }
+  .hero-dash { animation: none; }
   .track { animation: none; }
   .track { width: auto; flex-wrap: wrap; justify-content: center; }
   .tool.dup { display: none; }
@@ -762,11 +771,6 @@ main:focus { outline: none; }
         <div class="roles">
           <p>Roles I'm looking for</p>
           <ul class="tags"><li>E-commerce Executive</li><li>Online Trading Executive</li><li>E-commerce Merchandiser</li><li>Digital Marketing Executive</li></ul>
-        </div>
-        <div class="facts">
-          <span class="fact"><b>Harrow, London</b></span>
-          <span class="fact">Right to Work: <b>UK, no sponsorship required</b></span>
-          <span class="fact"><a href="tel:+447500631062">+44 7500 631062</a></span>
         </div>
       </div>
     </div>
@@ -1017,6 +1021,10 @@ main:focus { outline: none; }
       <div class="c-left">
         <h2 id="contact-h">Let's talk about your next hire</h2>
         <p>I'm actively looking for an e-commerce, trading or digital marketing role inside a team that has buying, supply chain, marketing and IT around it. Email is the quickest way to reach me.</p>
+        <div class="facts">
+          <span class="fact">Based in <b>Harrow, London</b></span>
+          <span class="fact">Right to Work: <b>UK, no sponsorship required</b></span>
+        </div>
       </div>
       <div class="c-right">
         <p class="mail-line" id="mailLine"><a href="mailto:sarjilpuri@gmail.com">sarjilpuri@gmail.com</a></p>
