@@ -334,8 +334,9 @@ main:focus { outline: none; }
 .status::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--accent); animation: pulse 2.2s ease-out infinite; }
 @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(255, 182, 39, .7); } 70%, 100% { box-shadow: 0 0 0 11px rgba(255, 182, 39, 0); } }
 
-.name { font-size: clamp(50px, min(9.2vw, 15.5vh), 128px); line-height: .92; letter-spacing: -0.045em; font-weight: 790; margin: 16px 0 0; }
-.ln { display: block; overflow: hidden; padding: 0 .05em .17em; margin-bottom: -.09em; }
+.name { display: flow-root; font-size: clamp(50px, min(9.2vw, 15.5vh), 128px); line-height: .92; letter-spacing: -0.045em; font-weight: 790; margin: 16px 0 0; }
+.ln { display: block; overflow: hidden; padding: .3em .14em .17em; margin: -.3em -.14em -.09em; }
+.name.settled .ln { overflow: visible; }
 .ch { display: inline-block; transform: translateY(115%) rotate(8deg); opacity: 0; filter: blur(12px); animation: chIn 1.1s cubic-bezier(.16, 1, .3, 1) forwards; animation-delay: calc(var(--i) * 60ms + .35s); }
 @keyframes chIn { to { transform: none; opacity: 1; filter: blur(0); } }
 .ci { display: inline-block; transform: translateY(calc(var(--w, 0) * -.17em)) scale(calc(1 + var(--w, 0) * .14)); will-change: transform; }
@@ -722,43 +723,31 @@ html[data-quick="on"] .sec:not(#results), html[data-quick="on"] .tools-cap, html
 .job-cols > div.hl { box-shadow: 0 0 0 1.5px var(--c), 0 0 28px -6px var(--c); background: color-mix(in srgb, var(--c) 9%, transparent); }
 .job-cols > div.hl h4 { color: var(--c); }
 
-/* ===== Run a trading day ===== */
-.sim { display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); gap: var(--gap) 32px; padding: var(--card); }
-.sim-ctl { display: grid; gap: 18px; align-content: start; }
-.ctl { border: 0; margin: 0; padding: 0; min-width: 0; }
-.ctl label:not(.pill), .ctl legend, .ctl-row { display: flex; justify-content: space-between; align-items: baseline; width: 100%; font-weight: 600; font-size: 15px; margin: 0 0 8px; padding: 0; }
-.ctl output { font: 600 14px var(--mono); color: var(--accent); }
-.ctl-l { font-weight: 600; font-size: 15px; }
-.ctl-row { margin-bottom: 8px; }
-input[type="range"] { -webkit-appearance: none; appearance: none; width: 100%; height: 6px; border-radius: 6px; background: linear-gradient(90deg, var(--violet), var(--accent)); margin: 8px 0; cursor: pointer; }
-input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 26px; height: 26px; border-radius: 50%; background: #fff; border: 4px solid var(--accent); box-shadow: 0 0 16px rgba(255, 182, 39, .7); cursor: pointer; }
-input[type="range"]::-moz-range-thumb { width: 22px; height: 22px; border-radius: 50%; background: #fff; border: 4px solid var(--accent); box-shadow: 0 0 16px rgba(255, 182, 39, .7); cursor: pointer; }
-input[type="range"]:focus-visible { outline: 3px solid var(--accent); outline-offset: 6px; }
-.pills { display: flex; flex-wrap: wrap; gap: 8px; }
-.pill { position: relative; display: block; margin: 0; }
-.pill input { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; margin: 0; }
-.pill span { display: block; padding: 10px 14px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); font-size: 14.5px; font-weight: 500; pointer-events: none; transition: background-color .2s ease, border-color .2s ease; }
-.pill input:checked + span { background: color-mix(in srgb, var(--accent) 18%, transparent); border-color: var(--accent); }
-.pill input:focus-visible + span { outline: 3px solid var(--accent); outline-offset: 3px; }
-.kpis { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-.kpi { padding: 12px 14px; border-radius: 16px; background: var(--surface); border: 1px solid var(--line); }
-.kpi .k { display: block; font: 750 clamp(22px, 2.6vw, 30px)/1.1 var(--display); letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
-.kpi .l { color: var(--muted); font-size: 13.5px; }
-.chart { margin-top: 12px; }
-.chart svg { width: 100%; height: 130px; display: block; }
-.chart-cap { margin: 4px 0 0; color: var(--muted); font-size: 13px; }
-.verdict { margin: 12px 0 0; font-size: 16px; min-height: 4.8em; }
-
+/* ===== The trading cycle: a calm, visual walk-through ===== */
+.cycle-wrap { padding: var(--card); }
+.cycle { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(6, 1fr); gap: 0 20px; position: relative; }
+.cycle::before, .cycle::after { content: ""; position: absolute; left: 22px; right: calc((100% - 100px) / 6 - 22px); top: 21px; height: 2px; border-radius: 2px; }
+.cycle::before { background: var(--line); }
+.cycle::after { background: linear-gradient(90deg, var(--accent), var(--mag), var(--violet)); box-shadow: 0 0 14px rgba(255, 79, 216, .6); transform-origin: left; transform: scaleX(var(--cp, 1)); }
+.step { position: relative; z-index: 1; min-width: 0; margin: 0; }
+.step .node { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; background: var(--surface-solid); border: 2px solid var(--line); font: 700 16px var(--display); color: var(--muted); transition: background-color .4s ease, border-color .4s ease, color .4s ease, box-shadow .4s ease; }
+.step.on .node { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); box-shadow: 0 0 0 6px rgba(255, 182, 39, .16), 0 0 26px rgba(255, 182, 39, .6); }
+.step h3 { font-size: 19px; line-height: 1.2; margin: 14px 0 6px; }
+.step p { margin: 0; font-size: 15px; line-height: 1.5; color: var(--muted); transition: color .4s ease; }
+.step.on p { color: var(--ink); }
 @media (max-width: 1080px) {
-  .sim { grid-template-columns: 1fr; }
+  .cycle { grid-template-columns: 1fr; gap: 22px 0; }
+  .step { display: grid; grid-template-columns: 44px 1fr; gap: 0 16px; align-items: start; }
+  .step .node { grid-row: 1 / span 2; }
+  .step h3 { margin: 0 0 4px; align-self: end; }
+  .cycle::before, .cycle::after { left: 21px; right: auto; top: 22px; bottom: 22px; width: 2px; height: auto; }
+  .cycle::after { transform-origin: top; transform: scaleY(var(--cp, 1)); background: linear-gradient(180deg, var(--accent), var(--mag), var(--violet)); }
 }
 @media (max-width: 600px) {
   #palBtn { display: none; }
-  .kpis { gap: 8px; }
-  .kpi { padding: 10px; }
 }
 @media print {
-  .intro-ov, .pal, .hire, .quick-btn, .skill-btn, .sim { display: none !important; }
+  .intro-ov, .pal, .hire, .quick-btn, .skill-btn { display: none !important; }
 }
 @media (prefers-reduced-motion: reduce) {
   .intro-ov { display: none !important; }
@@ -774,6 +763,28 @@ input[type="range"]:focus-visible { outline: 3px solid var(--accent); outline-of
 .glass:not(.lg) { -webkit-backdrop-filter: blur(2px); backdrop-filter: blur(2px); }
 
 .menu-cta .btn { flex: 1 1 auto; min-width: max-content; }
+
+/* ===== Polish: nothing gets hidden, finer detail ===== */
+@media (min-width: 901px) and (max-width: 1359px) { .hire { display: none; } }
+.spot::after { background: radial-gradient(340px circle at var(--sx, 50%) var(--sy, 0%), color-mix(in srgb, var(--violet) 18%, transparent), transparent 65%); }
+:root { --muted: #A6ADD8; scrollbar-width: thin; scrollbar-color: #2b3170 transparent; }
+:root[data-theme="light"] { --muted: #565C84; scrollbar-color: #aab0dc transparent; }
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-thumb { background: #2b3170; border-radius: 10px; border: 2px solid transparent; background-clip: content-box; }
+::-webkit-scrollbar-thumb:hover { background: #4a52a8; background-clip: content-box; border: 2px solid transparent; }
+:root[data-theme="light"] ::-webkit-scrollbar-thumb { background: #aab0dc; background-clip: content-box; }
+.idx { display: flex; align-items: center; gap: 12px; }
+.idx::after { content: ""; flex: 1; height: 1px; background: linear-gradient(90deg, var(--line), transparent); }
+.bcard[data-skill] { background: radial-gradient(120% 90% at 0% 0%, color-mix(in srgb, var(--c) 11%, transparent), transparent 62%), var(--grain), var(--surface); }
+.job-cols > div[data-skill] h4 { color: var(--c); }
+.verdict { padding: 12px 16px; border-left: 3px solid var(--accent); background: var(--surface); border-radius: 0 14px 14px 0; }
+.foot-in { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 4px 24px; padding-top: 20px; border-top: 1px solid var(--line); }
+.foot-links { display: flex; flex-wrap: wrap; gap: 4px 20px; }
+.foot-links a { display: inline-flex; align-items: center; min-height: 44px; color: var(--muted); text-decoration: none; transition: color .2s ease; }
+.foot-links a:hover { color: var(--ink); }
+:root[data-theme="light"] .job-cols > div[data-skill] h4 { color: #6a4a00; }
+
+@media (prefers-reduced-motion: reduce) { .step .node, .step p { transition: none; } }
 </style>
 </head>
 <body id="top">
@@ -952,7 +963,7 @@ input[type="range"]:focus-visible { outline: 3px solid var(--accent); outline-of
 
   <section class="sec" id="results" aria-labelledby="results-h">
     <p class="idx"><b>01</b>Results</p>
-    <h2 class="big md" id="results-h" data-scrub>What I've achieved in my current role</h2>
+    <h2 class="big md" id="results-h">What I've achieved in my current role</h2>
     <p class="sub">Each result shows what changed, how it was measured and what I did to get there.</p>
     <div class="results-grid">
       <article class="result glass spot" data-tilt style="--v:0.5">
@@ -992,45 +1003,19 @@ input[type="range"]:focus-visible { outline: 3px solid var(--accent); outline-of
     <p class="quick-exit"><button class="btn" type="button" id="quickOff">Show the full story</button></p>
   </section>
 
-  <section class="sec" id="sim" aria-labelledby="sim-h">
-    <p class="idx"><b>02</b>Try it</p>
-    <h2 class="big md" id="sim-h" data-scrub>Run a trading day</h2>
-    <p class="sub">A simplified model that shows how I think about price, promotions, email and stock. The numbers are an illustration, not real data.</p>
-    <div class="sim glass">
-      <div class="sim-ctl">
-        <div class="ctl">
-          <label for="price"><span>Price change</span><output id="priceOut" for="price">0%</output></label>
-          <input type="range" id="price" min="-15" max="15" step="1" value="0">
-        </div>
-        <fieldset class="ctl">
-          <legend>Promotion</legend>
-          <div class="pills">
-            <label class="pill"><input type="radio" name="promo" value="none" checked><span>None</span></label>
-            <label class="pill"><input type="radio" name="promo" value="off10"><span>10% off</span></label>
-            <label class="pill"><input type="radio" name="promo" value="bundle"><span>Bundle offer</span></label>
-          </div>
-        </fieldset>
-        <fieldset class="ctl">
-          <legend>Email flow</legend>
-          <div class="pills">
-            <label class="pill"><input type="checkbox" id="flow"><span>Segmented automated flow</span></label>
-          </div>
-        </fieldset>
-        <div class="ctl">
-          <div class="ctl-row"><span class="ctl-l">Stock and price mismatches</span><output id="mmOut">12</output></div>
-          <button class="btn btn-sm" type="button" id="checkBtn">Run the daily check</button>
-        </div>
-      </div>
-      <div class="sim-out">
-        <div class="kpis">
-          <div class="kpi"><span class="k" id="kConv">2.0%</span><span class="l">Conversion</span></div>
-          <div class="kpi"><span class="k" id="kRev">100</span><span class="l">Revenue index</span></div>
-          <div class="kpi"><span class="k" id="kProfit">100</span><span class="l">Profit index</span></div>
-        </div>
-        <div class="chart" id="simChart" aria-hidden="true"></div>
-        <p class="chart-cap" aria-hidden="true">Profit index across price changes from minus 15% to plus 15%</p>
-        <p class="verdict" id="verdict" aria-live="polite"></p>
-      </div>
+  <section class="sec" id="cycle" aria-labelledby="cycle-h">
+    <p class="idx"><b>02</b>The trading cycle</p>
+    <h2 class="big md" id="cycle-h" data-scrub>How I run the trading cycle</h2>
+    <p class="sub">From research to the daily check, I own every step, so nothing gets lost between teams.</p>
+    <div class="cycle-wrap glass">
+      <ol class="cycle" id="cycleList">
+        <li class="step"><span class="node" aria-hidden="true">1</span><h3>Research</h3><p>Watching competitors and market trends as I go, not once a quarter.</p></li>
+        <li class="step"><span class="node" aria-hidden="true">2</span><h3>Price</h3><p>Feeding what I find into pricing, positioning and content decisions.</p></li>
+        <li class="step"><span class="node" aria-hidden="true">3</span><h3>List</h3><p>Keeping 500+ products on Shopify complete, from descriptions to inventory.</p></li>
+        <li class="step"><span class="node" aria-hidden="true">4</span><h3>Merchandise</h3><p>Placing collections and promotions against the trading calendar for seasonal launches.</p></li>
+        <li class="step"><span class="node" aria-hidden="true">5</span><h3>Campaign</h3><p>Writing the copy and running Klaviyo and Mailchimp emails with segmentation and automated flows.</p></li>
+        <li class="step"><span class="node" aria-hidden="true">6</span><h3>Check</h3><p>Checking stock and pricing every day, and links, prices and offers before anything sends.</p></li>
+      </ol>
     </div>
   </section>
 
@@ -1230,7 +1215,14 @@ input[type="range"]:focus-visible { outline: 3px solid var(--accent); outline-of
 </main>
 
 <footer class="wrap foot">
-  <p>&copy; 2026 Sarjilpuri Gosai. Based in Harrow, London.</p>
+  <div class="foot-in">
+    <p>&copy; 2026 Sarjilpuri Gosai. Based in Harrow, London.</p>
+    <nav class="foot-links" aria-label="Footer">
+      <a href="mailto:sarjilpuri@gmail.com">Email</a>
+      <a href="https://linkedin.com/in/sarjilpuri-gosai-b03b27199" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+      <a href="#top">Back to top</a>
+    </nav>
+  </div>
 </footer>
 
 <div class="dock lg lg-strong" id="dock" role="group" aria-label="Quick contact">
@@ -1537,7 +1529,7 @@ input[type="range"]:focus-visible { outline: 3px solid var(--accent); outline-of
       return E;
     }
 
-    var STAGES = [['hero', 'sphere'], ['results', 'chart'], ['sim', 'grid'], ['about', 'torus'], ['work', 'galaxy'], ['experience', 'helix'], ['projects', 'cube'], ['education', 'sphere'], ['contact', 'envelope']];
+    var STAGES = [['hero', 'sphere'], ['results', 'chart'], ['cycle', 'torus'], ['about', 'grid'], ['work', 'galaxy'], ['experience', 'helix'], ['projects', 'cube'], ['education', 'sphere'], ['contact', 'envelope']];
     var els = STAGES.map(function (s) { return document.getElementById(s[0]); });
     var stageIdx = 0, shapeName = 'sphere';
     var SPIN = { sphere: 1, torus: 1, galaxy: 1, helix: 1, cube: 1 };
@@ -1853,6 +1845,8 @@ input[type="range"]:focus-visible { outline: 3px solid var(--accent); outline-of
   var pullEl = document.getElementById('pull');
   var pullWords = pullEl ? [].slice.call(pullEl.querySelectorAll('.w')) : [];
   var tlEl = document.getElementById('tl');
+  var cycleEl = document.getElementById('cycleList');
+  var cycleSteps = cycleEl ? [].slice.call(cycleEl.querySelectorAll('.step')) : [];
   var scrollQueued = false;
   function scrollFx() {
     scrollQueued = false;
@@ -1860,7 +1854,9 @@ input[type="range"]:focus-visible { outline: 3px solid var(--accent); outline-of
     var full = reduce || motionOff();
     scrubEls.forEach(function (el) {
       var r = el.getBoundingClientRect();
-      el.style.setProperty('--p', (full ? 1 : clamp((vh * 0.92 - r.top) / (vh * 0.5), 0, 1)).toFixed(3));
+      /* titles that start inside the first screen stay fully white; the fill effect is for the ones below */
+      var aboveFold = r.top + window.scrollY < vh * 1.05;
+      el.style.setProperty('--p', (full || aboveFold ? 1 : clamp((vh * 0.92 - r.top) / (vh * 0.5), 0, 1)).toFixed(3));
     });
     if (pullEl) {
       var pr = pullEl.getBoundingClientRect();
@@ -1871,6 +1867,12 @@ input[type="range"]:focus-visible { outline: 3px solid var(--accent); outline-of
     if (tlEl) {
       var tr = tlEl.getBoundingClientRect();
       tlEl.style.setProperty('--tp', (full ? 1 : clamp((vh * 0.62 - tr.top) / tr.height, 0, 1)).toFixed(3));
+    }
+    if (cycleEl) {
+      var cr = cycleEl.getBoundingClientRect();
+      var cp = full ? 1 : clamp((vh * 0.86 - cr.top) / Math.max(vh * 0.4, cr.height * 0.85), 0, 1);
+      cycleEl.style.setProperty('--cp', cp.toFixed(3));
+      cycleSteps.forEach(function (s, i) { s.classList.toggle('on', full || cp > (i + 0.25) / cycleSteps.length); });
     }
     var h = clamp(1 - hero.getBoundingClientRect().bottom / (vh * 0.9), 0, 1);
     hero.style.setProperty('--hp', h.toFixed(3));
@@ -1896,7 +1898,7 @@ input[type="range"]:focus-visible { outline: 3px solid var(--accent); outline-of
         }, 1500);
       });
     }, { threshold: 0.08, rootMargin: '0px 0px -5% 0px' });
-    document.querySelectorAll('.idx, .tools-cap, .tools, .sub, .result, .prose p, .glance, .bcard, .also, .job, .project, .edu-card, .cert, .langs, .panel').forEach(function (el) {
+    document.querySelectorAll('.idx, .tools-cap, .tools, .sub, .cycle-wrap, .result, .prose p, .glance, .bcard, .also, .job, .project, .edu-card, .cert, .langs, .panel').forEach(function (el) {
       var idx = Array.prototype.indexOf.call(el.parentNode.children, el);
       el.style.setProperty('--rd', Math.min(idx * 80, 320) + 'ms');
       el.classList.add('reveal');
@@ -1914,6 +1916,15 @@ input[type="range"]:focus-visible { outline: 3px solid var(--accent); outline-of
       return { x: r.left + r.width / 2 + window.scrollX, y: r.top + r.height / 2 + window.scrollY };
     });
   }
+  var nameEl = document.getElementById('name');
+  (function () {
+    if (!nameEl) return;
+    var total = nameEl.querySelectorAll('.ch').length, seen = 0, settledOnce = false;
+    function settle() { if (settledOnce) return; settledOnce = true; nameEl.classList.add('settled'); measureLetters(); }
+    nameEl.addEventListener('animationend', function (e) { if (e.animationName === 'chIn' && ++seen >= total) settle(); });
+    setTimeout(settle, 7000);
+    if (reduce || motionOff()) settle();
+  })();
   setTimeout(measureLetters, 2400);
   window.addEventListener('resize', function () { setTimeout(measureLetters, 300); });
   var cxr = 0, cyr = 0, gxr = 0, gyr = 0, curOn = false, tiltEl = null;
@@ -1929,7 +1940,7 @@ input[type="range"]:focus-visible { outline: 3px solid var(--accent); outline-of
       curDot.style.transform = 'translate3d(' + mouse.x + 'px,' + mouse.y + 'px,0)';
       glow.style.transform = 'translate3d(' + gxr.toFixed(1) + 'px,' + gyr.toFixed(1) + 'px,0)';
     }
-    if (lpos.length && fine && !motionOff()) {
+    if (lpos.length && fine && !motionOff() && nameEl && nameEl.classList.contains('settled')) {
       var mxp = mouse.x + window.scrollX, myp = mouse.y + window.scrollY;
       for (var i = 0; i < letters.length; i++) {
         var dx = mxp - lpos[i].x, dy = myp - lpos[i].y, d = Math.sqrt(dx * dx + dy * dy);
@@ -2020,62 +2031,6 @@ input[type="range"]:focus-visible { outline: 3px solid var(--accent); outline-of
     })(t0);
   }
 
-  /* ---- Run a trading day: a simplified, illustrative model ---- */
-  (function () {
-    var box = document.getElementById('sim');
-    if (!box) return;
-    var price = document.getElementById('price'), priceOut = document.getElementById('priceOut');
-    var flow = document.getElementById('flow'), mmOut = document.getElementById('mmOut'), checkBtn = document.getElementById('checkBtn');
-    var kConv = document.getElementById('kConv'), kRev = document.getElementById('kRev'), kProfit = document.getElementById('kProfit');
-    var chart = document.getElementById('simChart'), verdict = document.getElementById('verdict');
-    var mm = 12, busy = false;
-    function promo() { var r = box.querySelector('input[name="promo"]:checked'); return r ? r.value : 'none'; }
-    function model(p, pr, fl, m) {
-      var priceEff = 1 + p / 100, demand = 1 - 2.2 * (p / 100), aov = 1;
-      if (pr === 'off10') { priceEff *= 0.9; demand *= 1.18; }
-      if (pr === 'bundle') { aov = 1.12; demand *= 1.05; }
-      var conv = 2.0 * demand * (1 - 0.006 * m), em = fl ? 1.09 : 1;
-      return { conv: conv, rev: 100 * (conv * priceEff * aov * em) / 2.0, profit: 100 * (conv * aov * em * (priceEff - 0.6)) / 0.8 };
-    }
-    function render() {
-      var p = +price.value, pr = promo(), fl = flow.checked;
-      var cur = model(p, pr, fl, mm);
-      priceOut.textContent = (p > 0 ? '+' : '') + p + '%';
-      mmOut.textContent = mm;
-      kConv.textContent = cur.conv.toFixed(2) + '%';
-      kRev.textContent = Math.round(cur.rev);
-      kProfit.textContent = Math.round(cur.profit);
-      var best = -99, bestV = -1e9, bars = [], q;
-      for (q = -15; q <= 15; q++) { var v = model(q, pr, fl, mm).profit; if (v > bestV) { bestV = v; best = q; } }
-      for (q = -15; q <= 15; q += 5) bars.push({ p: q, v: model(q, pr, fl, mm).profit });
-      var max = Math.max.apply(null, bars.map(function (x) { return x.v; })), min = Math.min.apply(null, bars.map(function (x) { return x.v; })), svg = '<svg viewBox="0 0 300 130" preserveAspectRatio="none">';
-      bars.forEach(function (x, idx) {
-        var hgt = 14 + 96 * ((x.v - min) / Math.max(max - min, 1)), on = Math.abs(x.p - p) < 2.5;
-        svg += '<rect x="' + (10 + idx * 41) + '" y="' + (118 - hgt) + '" width="30" height="' + hgt + '" rx="6" fill="' + (on ? 'var(--accent)' : 'var(--tile-bar)') + '"/>';
-        svg += '<text x="' + (25 + idx * 41) + '" y="128" text-anchor="middle" font-size="8" fill="var(--muted)">' + (x.p > 0 ? '+' : '') + x.p + '</text>';
-      });
-      chart.innerHTML = svg + '</svg>';
-      var msg = 'With these choices the best price change for profit is ' + (best > 0 ? '+' : '') + best + '%. Yours gives a profit index of ' + Math.round(cur.profit) + '.';
-      if (mm > 0) msg += ' ' + mm + ' mismatches are costing about ' + (mm * 0.6).toFixed(1) + '% of sales, so the daily check pays for itself.';
-      else msg += ' The stock check is clean.';
-      verdict.textContent = msg;
-    }
-    price.addEventListener('input', render);
-    box.querySelectorAll('input[type="radio"], #flow').forEach(function (e) { e.addEventListener('change', render); });
-    checkBtn.addEventListener('click', function () {
-      if (busy) return;
-      if (mm === 0) { mm = 12; checkBtn.textContent = 'Run the daily check'; render(); return; }
-      busy = true;
-      var done = function () {
-        busy = false; checkBtn.textContent = 'Reset the day'; render();
-        var r = checkBtn.getBoundingClientRect(); burst(r.left + r.width / 2, r.top, 50);
-      };
-      if (motionOff()) { mm = 0; done(); return; }
-      var iv = setInterval(function () { mm--; render(); if (mm <= 0) { clearInterval(iv); done(); } }, 110);
-    });
-    render();
-  })();
-
   /* ---- 30-second version ---- */
   var quickBtn = document.getElementById('quickBtn'), quickOff = document.getElementById('quickOff');
   function quickOn() { return root.getAttribute('data-quick') === 'on'; }
@@ -2141,7 +2096,7 @@ input[type="range"]:focus-visible { outline: 3px solid var(--accent); outline-of
     }
     var cmds = [
       ['Go to', 'Results', 'achievements numbers', go('results')],
-      ['Go to', 'Run a trading day', 'try simulator price promotion', go('sim')],
+      ['Go to', 'The trading cycle', 'process research price list campaign check', go('cycle')],
       ['Go to', 'About', 'profile', go('about')],
       ['Go to', 'What I do', 'skills services', go('work')],
       ['Go to', 'Experience', 'work history job', go('experience')],
