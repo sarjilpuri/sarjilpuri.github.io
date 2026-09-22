@@ -1228,7 +1228,7 @@ html[data-quick="on"] .sec:not(#results), html[data-quick="on"] .tools-cap, html
         <div class="cta-row">
           <a class="btn btn-primary" href="mailto:sarjilpuri@gmail.com" data-magnet>Send an email</a>
           <a class="btn" href="Sarjilpuri_Gosai_CV.pdf" download data-alt="Request my CV"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11"/><path d="m7 11 5 5 5-5"/><path d="M5 20h14"/></svg><span class="lbl">Download CV (PDF)</span></a>
-          <button class="btn" type="button" id="copyBtn">Copy address</button>
+          <button class="btn" type="button" id="copyBtn">Copy Email</button>
           <a class="btn" href="https://linkedin.com/in/sarjilpuri-gosai-b03b27199" target="_blank" rel="noopener noreferrer">LinkedIn</a>
         </div>
       </div>
@@ -2332,7 +2332,7 @@ html[data-quick="on"] .sec:not(#results), html[data-quick="on"] .tools-cap, html
     function done(ok) {
       if (ok) { var rb = copyBtn.getBoundingClientRect(); burst(rb.left + rb.width / 2, rb.top, 70); }
       copyBtn.textContent = ok ? 'Copied' : 'Select the address above';
-      setTimeout(function () { copyBtn.textContent = 'Copy address'; }, 2200);
+      setTimeout(function () { copyBtn.textContent = 'Copy Email'; }, 2200);
     }
     try {
       navigator.clipboard.writeText(address).then(function () { done(true); }, function () { done(false); });
